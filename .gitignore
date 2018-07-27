@@ -70,6 +70,20 @@ compile_commands.json
 DartConfiguration.tcl
 install_manifest.txt
 Testing/
+CMakeLists.txt
+Findcxxtools.cmake
+Findczmq.cmake
+Findfty_common.cmake
+Findfty_common_db.cmake
+Findfty_common_logging.cmake
+Findlibsasl2.cmake
+Findlibsodium.cmake
+Findlibzmq.cmake
+Findlog4cplus.cmake
+Findopenssl.cmake
+Findtntdb.cmake
+Findtntnet.cmake
+builds/cmake/
 
 # Repositories downloaded by CI integration scripts
 libsodium/
