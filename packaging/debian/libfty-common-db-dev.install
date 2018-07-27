@@ -1,0 +1,3 @@
+usr/include/*
+usr/lib/*/libfty_common_db.so
+usr/lib/*/pkgconfig/libfty_common_db.pc

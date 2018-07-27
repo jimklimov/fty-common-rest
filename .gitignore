@@ -21,17 +21,17 @@ save.xml
 *.lo
 
 # Executables
-src/fty-common_selftest
-src/fty_common_selftest
+src/fty-common-rest_selftest
+src/fty_common_rest_selftest
 *.exe
 *.out
 *.app
 core
 
 # Distcheck workspace and archives
-fty-common-*/
-fty-common-*.tar.gz
-fty-common-*.zip
+fty-common-rest-*/
+fty-common-rest-*.tar.gz
+fty-common-rest-*.zip
 
 # Man pages
 doc/*.1
@@ -60,10 +60,6 @@ src/platform.h.in~
 src/stamp-h1
 src/test-suite.log
 src/.dirstamp
-src/fty-common/common/.dirstamp
-src/fty-common/db/.dirstamp
-src/fty-common/log/.dirstamp
-src/fty-common/web/.dirstamp
 
 # CMake cache
 CMakeCache.txt
@@ -75,19 +71,17 @@ DartConfiguration.tcl
 install_manifest.txt
 Testing/
 
-# CMake in general
-builds/cmake/
-CMake*
-*.cmake
-
 # Repositories downloaded by CI integration scripts
 libsodium/
-libzmq/
-czmq/
 cxxtools/
 tntnet/
-tntdb/
 log4cplus/
+fty-common-logging/
+libzmq/
+czmq/
+fty-common/
+tntdb/
+fty-common-db/
 
 # Travis build area
 tmp/
