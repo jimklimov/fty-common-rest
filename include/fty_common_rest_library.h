@@ -34,7 +34,6 @@
 #include <cxxtools/allocator.h>
 #include <tnt/tntnet.h>
 #include <sasl/sasl.h>
-#include <openssl/sha.h>
 #include <fty_log.h>
 #include <czmq.h>
 #include <fty_common.h>

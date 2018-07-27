@@ -13,7 +13,6 @@ AM_CPPFLAGS = \
     ${cxxtools_CFLAGS} \
     ${tntnet_CFLAGS} \
     ${libsasl2_CFLAGS} \
-    ${openssl_CFLAGS} \
     ${log4cplus_CFLAGS} \
     ${fty_common_logging_CFLAGS} \
     ${libzmq_CFLAGS} \
@@ -24,7 +23,7 @@ AM_CPPFLAGS = \
     -D__STDC_FORMAT_MACROS \
     -I$(srcdir)/include
 
-project_libs = ${libsodium_LIBS} ${cxxtools_LIBS} ${tntnet_LIBS} ${libsasl2_LIBS} ${openssl_LIBS} ${log4cplus_LIBS} ${fty_common_logging_LIBS} ${libzmq_LIBS} ${czmq_LIBS} ${fty_common_LIBS} ${tntdb_LIBS} ${fty_common_db_LIBS}
+project_libs = ${libsodium_LIBS} ${cxxtools_LIBS} ${tntnet_LIBS} ${libsasl2_LIBS} ${log4cplus_LIBS} ${fty_common_logging_LIBS} ${libzmq_LIBS} ${czmq_LIBS} ${fty_common_LIBS} ${tntdb_LIBS} ${fty_common_db_LIBS}
 
 SUBDIRS = doc
 SUBDIRS += include
@@ -49,7 +48,6 @@ EXTRA_DIST += \
     Findcxxtools.cmake \
     Findtntnet.cmake \
     Findlibsasl2.cmake \
-    Findopenssl.cmake \
     Findlog4cplus.cmake \
     Findfty_common_logging.cmake \
     Findlibzmq.cmake \

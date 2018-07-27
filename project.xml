@@ -51,8 +51,6 @@
         redhat_name="cyrus-sasl-devel"
     />
 
-    <use project = "openssl" header = "openssl/sha.h" debian_name="libssl-dev"/>
-
     <use project = "fty-common-logging" libname = "libfty_common_logging" header="fty_log.h"
         repository = "https://github.com/42ity/fty-common-logging.git"
         release = "master" >

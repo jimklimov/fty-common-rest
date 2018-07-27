@@ -51,7 +51,6 @@ BuildRequires:  libsodium-devel
 BuildRequires:  cxxtools-devel
 BuildRequires:  tntnet-devel
 BuildRequires:  cyrus-sasl-devel
-BuildRequires:  openssl-devel
 BuildRequires:  log4cplus-devel
 BuildRequires:  fty-common-logging-devel
 BuildRequires:  zeromq-devel
@@ -86,7 +85,6 @@ Requires:       libsodium-devel
 Requires:       cxxtools-devel
 Requires:       tntnet-devel
 Requires:       cyrus-sasl-devel
-Requires:       openssl-devel
 Requires:       log4cplus-devel
 Requires:       fty-common-logging-devel
 Requires:       zeromq-devel
