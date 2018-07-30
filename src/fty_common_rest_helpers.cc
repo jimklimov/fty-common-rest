@@ -23,10 +23,11 @@
 #include <unistd.h> // make "readlink" available on ARM
 #include <tntdb.h>
 
-#include "fty-common/web/utils_web.h"
-#include "fty-common/web/helpers.h"
-#include "fty-common/db/dbpath.h"
-#include "fty-common/common/str_defs.h" // EV_LICENSE_DIR, EV_DATA_DIR
+#include <fty_common_db_dbpath.h>
+#include <fty_common_str_defs.h> // EV_LICENSE_DIR, EV_DATA_DIR
+
+#include "fty_common_rest_utils_web.h"
+#include "fty_common_rest_helpers.h"
 //#include "shared/log.h"
 
 /**

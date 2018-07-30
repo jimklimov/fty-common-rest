@@ -65,7 +65,7 @@
 #include <set>
 #include <map>
 #include <deque>
-#include "helpers.h"
+#include "fty_common_rest_helpers.h"
 
 //! Maximum length of the message stored in the token
 //#define MESSAGE_LEN (3 * sizeof (long int) + sizeof (int) + 32)

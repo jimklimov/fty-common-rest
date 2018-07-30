@@ -30,7 +30,7 @@
 #include <sys/syscall.h>
 
 //#include "shared/subprocess.h"
-#include "fty-common/web/utils_web.h"
+#include "fty_common_rest_utils_web.h"
 
 namespace utils {
 

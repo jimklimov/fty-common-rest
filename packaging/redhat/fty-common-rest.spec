@@ -1,5 +1,5 @@
 #
-#    fty-common - Provides common tools for agents
+#    fty-common-rest - Provides common RestAPI tools for agents
 #
 #    Copyright (C) 2014 - 2018 Eaton
 #
@@ -28,10 +28,10 @@
 %else
 %define DRAFTS no
 %endif
-Name:           fty-common
+Name:           fty-common-rest
 Version:        1.0.0
 Release:        1
-Summary:        provides common tools for agents
+Summary:        provides common restapi tools for agents
 License:        GPL-2.0+
 URL:            https://42ity.org
 Source0:        %{name}-%{version}.tar.gz
@@ -48,56 +48,60 @@ BuildRequires:  pkgconfig
 BuildRequires:  xmlto
 BuildRequires:  gcc-c++
 BuildRequires:  libsodium-devel
-BuildRequires:  zeromq-devel
-BuildRequires:  czmq-devel
 BuildRequires:  cxxtools-devel
 BuildRequires:  tntnet-devel
-BuildRequires:  tntdb-devel
 BuildRequires:  cyrus-sasl-devel
 BuildRequires:  log4cplus-devel
-BuildRequires:  openssl-devel
+BuildRequires:  fty-common-logging-devel
+BuildRequires:  zeromq-devel
+BuildRequires:  czmq-devel
+BuildRequires:  fty-common-devel
+BuildRequires:  tntdb-devel
+BuildRequires:  fty-common-db-devel
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 
 %description
-fty-common provides common tools for agents.
+fty-common-rest provides common restapi tools for agents.
 
-%package -n libfty_common1
+%package -n libfty_common_rest1
 Group:          System/Libraries
-Summary:        provides common tools for agents shared library
+Summary:        provides common restapi tools for agents shared library
 
-%description -n libfty_common1
-This package contains shared library for fty-common: provides common tools for agents
+%description -n libfty_common_rest1
+This package contains shared library for fty-common-rest: provides common restapi tools for agents
 
-%post -n libfty_common1 -p /sbin/ldconfig
-%postun -n libfty_common1 -p /sbin/ldconfig
+%post -n libfty_common_rest1 -p /sbin/ldconfig
+%postun -n libfty_common_rest1 -p /sbin/ldconfig
 
-%files -n libfty_common1
+%files -n libfty_common_rest1
 %defattr(-,root,root)
-%{_libdir}/libfty_common.so.*
+%{_libdir}/libfty_common_rest.so.*
 
 %package devel
-Summary:        provides common tools for agents
+Summary:        provides common restapi tools for agents
 Group:          System/Libraries
-Requires:       libfty_common1 = %{version}
+Requires:       libfty_common_rest1 = %{version}
 Requires:       libsodium-devel
-Requires:       zeromq-devel
-Requires:       czmq-devel
 Requires:       cxxtools-devel
 Requires:       tntnet-devel
-Requires:       tntdb-devel
 Requires:       cyrus-sasl-devel
 Requires:       log4cplus-devel
-Requires:       openssl-devel
+Requires:       fty-common-logging-devel
+Requires:       zeromq-devel
+Requires:       czmq-devel
+Requires:       fty-common-devel
+Requires:       tntdb-devel
+Requires:       fty-common-db-devel
 
 %description devel
-provides common tools for agents development tools
-This package contains development files for fty-common: provides common tools for agents
+provides common restapi tools for agents development tools
+This package contains development files for fty-common-rest: provides common restapi tools for agents
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%{_libdir}/libfty_common.so
-%{_libdir}/pkgconfig/libfty_common.pc
+%{_libdir}/libfty_common_rest.so
+%{_libdir}/pkgconfig/libfty_common_rest.pc
 %{_mandir}/man3/*
 %{_mandir}/man7/*
 

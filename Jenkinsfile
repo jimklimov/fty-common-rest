@@ -1,5 +1,5 @@
 /*
-    fty-common - Provides common tools for agents
+    fty-common-db - Provides common RestAPI tools for agents
 
     Copyright (C) 2014 - 2018 Eaton
 

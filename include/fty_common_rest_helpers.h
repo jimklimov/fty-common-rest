@@ -31,7 +31,7 @@
 
 #include <string>
 #include <tnt/httprequest.h>
-#include "utils_web.h"
+#include "fty_common_rest_utils_web.h"
 
 bool
 systemctl_valid_service_name (std::string& service_name);

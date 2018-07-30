@@ -42,7 +42,7 @@
 #include <cmath>
 #include <climits>
 #include <cxxtools/serializationinfo.h>
-#include "fty-common/log/fty_log.h"
+#include <fty_log.h>
 //#include "utilspp.h"
 
 #include <tnt/http.h>
@@ -541,13 +541,12 @@ json2zpl (
 } // namespace utils::config
 
 namespace email {
-/*!
- \brief Add various X-Eaton-IPC headers ho zhash_t
-
- \param [in]  headers - hashmap with headers
-*/
-void
-x_headers (zhash_t *headers);
+    /*!
+     *  \brief Add various X-Eaton-IPC headers ho zhash_t
+     *   \param [in]  headers - hashmap with headers
+     *   */
+    void
+        x_headers (zhash_t *headers);
 } // namespace utils::email
 
 } // namespace utils
