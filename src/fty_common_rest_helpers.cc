@@ -154,7 +154,7 @@ iname_to_dbid (const std::string& url, const std::string& asset_name)
     {
         int64_t id = 0;
 
-        tntdb::Connection conn = tntdb::connectCached(url);
+        tntdb::Connection conn = tntdb::connectCached(DBConn::url);
         tntdb::Statement st = conn.prepareCached(
         " SELECT id_asset_element"
         " FROM"
@@ -197,7 +197,7 @@ check_element_identifier (const char *param_name, const std::string& param_value
             return false;
         }
     }
-    eid =iname_to_dbid (url, param_value);
+    eid =iname_to_dbid (DBConn::url, param_value);
     if (eid == -1) {
         http_add_error (
             "", errors, "request-param-bad", param_name,
