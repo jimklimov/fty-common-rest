@@ -166,7 +166,7 @@ check_element_identifier (const char *param_name, const std::string& param_value
         }
     }
     eid = DBAssets::name_to_asset_id (param_value);
-    if (eid == -1) {
+    if (eid < 0) {
         http_add_error (
             "", errors, "request-param-bad", param_name,
             std::string ("value '").append (param_value).append ("' is not valid identificator").c_str (),
