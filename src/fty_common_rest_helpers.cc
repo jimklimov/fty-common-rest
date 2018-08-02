@@ -24,6 +24,7 @@
 #include <tntdb.h>
 
 #include <fty_common_db_dbpath.h>
+#include <fty_common_db_asset.h>
 #include <fty_common_str_defs.h> // EV_LICENSE_DIR, EV_DATA_DIR
 
 #include "fty_common_rest_utils_web.h"
@@ -146,38 +147,6 @@ const char* UserInfo::toString() {
     return "N/A";
 }
 
-
-int64_t
-iname_to_dbid (const std::string& url, const std::string& asset_name)
-{
-    try
-    {
-        int64_t id = 0;
-
-        tntdb::Connection conn = tntdb::connectCached(DBConn::url);
-        tntdb::Statement st = conn.prepareCached(
-        " SELECT id_asset_element"
-        " FROM"
-        "   t_bios_asset_element"
-        " WHERE name = :asset_name"
-        );
-
-        tntdb::Row row = st.set("asset_name", asset_name).selectRow();
-        log_debug("[t_bios_asset_element]: were selected %" PRIu32 " rows", 1);
-
-        row [0].get(id);
-        return id;
-    }
-    catch (const std::exception &e)
-    {
-        if (!asset_name.empty())
-            log_error ("%s not found. exception caught %s", asset_name.c_str(), e.what ());
-        else
-            log_error ("asset_name empty. exception caught %s", e.what ());
-        return -1;
-    }
-}
-
 bool
 check_element_identifier (const char *param_name, const std::string& param_value, uint32_t& element_id, http_errors_t& errors) {
     assert (param_name);
@@ -185,7 +154,6 @@ check_element_identifier (const char *param_name, const std::string& param_value
         http_add_error ("", errors,"request-param-required", param_name);
         return false;
     }
-
 
     int64_t eid = 0;
     const char *prohibited = "_@%;\"";
@@ -197,8 +165,8 @@ check_element_identifier (const char *param_name, const std::string& param_value
             return false;
         }
     }
-    eid =iname_to_dbid (DBConn::url, param_value);
-    if (eid == -1) {
+    eid = DBAssets::name_to_asset_id (param_value);
+    if (eid < 0) {
         http_add_error (
             "", errors, "request-param-bad", param_name,
             std::string ("value '").append (param_value).append ("' is not valid identificator").c_str (),
