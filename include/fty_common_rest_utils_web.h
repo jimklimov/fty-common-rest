@@ -551,6 +551,10 @@ namespace email {
 
 } // namespace utils
 
+//  Self test of this class
+void
+    fty_common_rest_utils_web_test (bool verbose);
+
 #endif // __cplus_plus
 
 #endif // SRC_SHARED_WEB_UTILS_H_
