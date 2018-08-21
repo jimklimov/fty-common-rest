@@ -66,7 +66,6 @@ Description: fty-common-rest development tools
  This package contains development files for fty-common-rest:
  provides common restapi tools for agents
 
-
 Package: fty-common-rest-dbg
 Architecture: any
 Section: debug
