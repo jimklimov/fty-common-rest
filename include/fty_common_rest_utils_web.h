@@ -538,6 +538,14 @@ json2zpl (
         const cxxtools::SerializationInfo &si,
         std::lock_guard <std::mutex> &lock);
 
+/*!
+ \brief Free zpl structures allocated by json2zpl
+
+ \param [in] roots - map of file_path to zconfig with updated values
+*/
+void
+roots_destroy (const std::map <std::string, zconfig_t*>& roots);
+
 } // namespace utils::config
 
 namespace email {
@@ -551,9 +559,18 @@ namespace email {
 
 } // namespace utils
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 //  Self test of this class
 void
     fty_common_rest_utils_web_test (bool verbose);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // __cplus_plus
 

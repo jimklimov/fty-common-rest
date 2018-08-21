@@ -430,6 +430,16 @@ assert_value (const std::string& key, const std::string& value)
 }
 
 void
+roots_destroy (const std::map <std::string, zconfig_t*>& roots)
+{
+    for (const auto &it: roots)
+    {
+        zconfig_t *cfg = it.second;
+        zconfig_destroy (&cfg);
+    }
+}
+
+void
 json2zpl (
         std::map <std::string, zconfig_t*> &roots,
         const cxxtools::SerializationInfo &si,
@@ -571,6 +581,11 @@ x_headers (zhash_t *headers)
 
 //  --------------------------------------------------------------------------
 //  Self test of this class
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 void
 fty_common_rest_utils_web_test (bool verbose)
@@ -1000,22 +1015,22 @@ fty_common_rest_utils_web_test (bool verbose)
 
         zconfig_t *config = roots [utils::config::get_path ("BIOS_SMTP_VERIFY_CA")];
         assert (streq (zconfig_get (config, "smtp/verify_ca", "false"), "true"));
-        zconfig_destroy (&config);
 
         config = roots [utils::config::get_path ("BIOS_SNMP_COMMUNITY_NAME")];
         assert (streq (zconfig_get (config, "snmp/community/0", "NULL"), "foo"));
         assert (streq (zconfig_get (config, "snmp/community/1", "NULL"), "bar"));
-        zconfig_destroy (&config);
 
         // legacy_path
         config = roots [utils::config::get_path ("old_array")];
-        assert (!zconfig_get (config, "old_array", NULL));
+        assert (zconfig_get (config, "old_array", NULL) == NULL);
         assert (zconfig_locate (config, "old_array") != NULL);
 
         assert (streq (zconfig_get (config, "old_array/0", "NULL"), "old_value1"));
         assert (streq (zconfig_get (config, "old_array/1", "NULL"), "old_value2"));
 
-        zconfig_destroy (&config);
+        // Cleanup
+        utils::config::roots_destroy(roots);
+        roots.clear();
 
         // change value
         std::string JSON2 =
@@ -1034,11 +1049,10 @@ fty_common_rest_utils_web_test (bool verbose)
 
         config = roots [utils::config::get_path ("BIOS_SMTP_VERIFY_CA")];
         assert (streq (zconfig_get (config, "smtp/verify_ca", "true"), "false"));
-        zconfig_destroy (&config);
+
         config = roots [utils::config::get_path ("BIOS_SNMP_COMMUNITY_NAME")];
         assert (streq (zconfig_get (config, "snmp/community/0", "NULL"), "ham"));
         assert (streq (zconfig_get (config, "snmp/community/1", "NULL"), "spam"));
-        zconfig_destroy (&config);
 
         // legacy_path
         config = roots [utils::config::get_path ("old_array")];
@@ -1047,7 +1061,10 @@ fty_common_rest_utils_web_test (bool verbose)
 
         assert (streq (zconfig_get (config, "old_array/0", "NULL"), "new_value42"));
         assert (streq (zconfig_get (config, "old_array/1", "NULL"), "new_value44"));
-        zconfig_destroy (&config);
+
+        // Cleanup
+        utils::config::roots_destroy(roots);
+        roots.clear();
 
         //legacy_path single value
         std::string JSON3 =
@@ -1064,7 +1081,10 @@ fty_common_rest_utils_web_test (bool verbose)
 
         config = roots [utils::config::get_path ("BIOS_SMTP_VERIFY_CA")];
         assert (streq (zconfig_get (config, "smtp/verify_ca", "true"), "false"));
-        zconfig_destroy (&config);
+
+        // Cleanup
+        utils::config::roots_destroy(roots);
+        roots.clear();
 
         // test less values in array
         std::string JSON4 =
@@ -1085,8 +1105,14 @@ fty_common_rest_utils_web_test (bool verbose)
         assert (!zconfig_get (config, "snmp/community/1", NULL));
         assert (!zconfig_get (config, "snmp/community/2", NULL));
 
-        zconfig_destroy (&config);
+        // Cleanup
+        utils::config::roots_destroy(roots);
+        roots.clear();
 
         printf ("OK\n");
     }
 }
+
+#ifdef __cplusplus
+}
+#endif
