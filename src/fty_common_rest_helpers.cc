@@ -25,6 +25,7 @@
 
 #include <fty_common_db_dbpath.h>
 #include <fty_common_db_asset.h>
+#include <fty_common_macros.h>
 #include <fty_common_str_defs.h> // EV_LICENSE_DIR, EV_DATA_DIR
 
 #include "fty_common_rest_utils_web.h"
@@ -212,9 +213,15 @@ check_regex_text (const char *param_name, const std::string& param_value, const 
 {
     cxxtools::Regex R (regex, REG_EXTENDED | REG_ICASE);
     if (! R.match (param_value)) {
+        char *msg_received = zsys_sprintf (TRANSLATE_ME ("value '%s' is not valid", param_value.c_str ()));
+        std::string msg_received_str (msg_received);
+        zstr_free (&msg_received);
+        char *msg_expected = zsys_sprintf (TRANSLATE_ME ("string matching '%s' regular expression", regex.c_str ()));
+        std::string msg_expected_str (msg_expected);
+        zstr_free (&msg_expected);
         http_add_error ("", errors, "request-param-bad", param_name,
-                        std::string ("value '").append (param_value).append ("'").append (" is not valid").c_str (),
-                        std::string ("string matching ").append (regex).append (" regular expression").c_str ());
+                        msg_received_str.c_str (),
+                        msg_expected_str.c_str ());
         return false;
     }
     return true;
@@ -267,7 +274,7 @@ static const std::vector <char> single_byte_excludes = {
 
 bool check_asset_name (const std::string& param_name, const std::string& name, http_errors_t &errors) {
     if (utf8_contains_chars (name, single_byte_excludes) == 1) {
-        http_add_error ("", errors, "request-param-bad", param_name.c_str (), name.c_str (), "valid asset name (characters not allowed: \\x00 ... \\x0f");
+        http_add_error ("", errors, "request-param-bad", param_name.c_str (), name.c_str (), TRANSLATE_ME ("valid asset name (characters not allowed: \\x00 ... \\x0f"));
         return false;
     }
     return true;
