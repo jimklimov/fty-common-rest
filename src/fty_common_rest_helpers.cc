@@ -22,6 +22,7 @@
 #include <cxxtools/regex.h>
 #include <unistd.h> // make "readlink" available on ARM
 #include <tntdb.h>
+#include <cstdlib>
 
 #include <fty_common_db_dbpath.h>
 #include <fty_common_db_asset.h>
@@ -160,19 +161,23 @@ check_element_identifier (const char *param_name, const std::string& param_value
     const char *prohibited = "_@%;\"";
     for (unsigned int a = 0; a < strlen (prohibited); ++a) {
         if (param_value.find (prohibited[a]) != std::string::npos) {
-            http_add_error ("", errors, "request-param-bad", param_name,
-                            std::string ("value '").append (param_value).append ("'").append (" contains prohibited characters (").append (prohibited).append(")").c_str (),
-                            "valid identificator");
+            char *err = (char *) malloc (sizeof (char) * 256); // zsys_sprintf would allocate at least this amount of memory, so no problem there
+            if ( sprintf (err, TRANSLATE_ME("value '%s' contains prohibited characters (%s)", param_value.c_str(), prohibited)) > 255) {
+                log_error ("Error too long: value '%s' contains prohibited characters (%s)", param_value.c_str(), prohibited);
+            }
+            http_add_error ("", errors, "request-param-bad", param_name, err, TRANSLATE_ME("valid identificator"));
+            free (err);
             return false;
         }
     }
     eid = DBAssets::name_to_asset_id (param_value);
-    if (eid < 0) {
-        http_add_error (
-            "", errors, "request-param-bad", param_name,
-            std::string ("value '").append (param_value).append ("' is not valid identificator").c_str (),
-            "existing identificator"
-            );
+    if (eid == -1) {
+        char *err = (char *) malloc (sizeof (char) * 256); // zsys_sprintf would allocate at least this amount of memory, so no problem there
+        if ( sprintf (err, TRANSLATE_ME("value '%s' is not valid identificator", param_value.c_str())) > 255) {
+            log_error ("Error too long: value '%s' is not valid identificator", param_value.c_str());
+        }
+        http_add_error ("", errors, "request-param-bad", param_name, err, TRANSLATE_ME("existing identificator"));
+        free (err);
         return false;
     }
     element_id = eid;
