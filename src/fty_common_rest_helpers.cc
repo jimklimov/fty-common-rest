@@ -216,7 +216,7 @@ check_regex_text (const char *param_name, const std::string& param_value, const 
         char *msg_received = zsys_sprintf (TRANSLATE_ME ("value '%s' is not valid", param_value.c_str ()));
         std::string msg_received_str (msg_received);
         zstr_free (&msg_received);
-        char *msg_expected = zsys_sprintf (TRANSLATE_ME ("string matching '%s' regular expression", regex.c_str ()));
+        char *msg_expected = zsys_sprintf (TRANSLATE_ME ("string matching %s regular expression", regex.c_str ()));
         std::string msg_expected_str (msg_expected);
         zstr_free (&msg_expected);
         http_add_error ("", errors, "request-param-bad", param_name,
