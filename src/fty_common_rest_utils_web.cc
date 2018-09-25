@@ -187,7 +187,7 @@ std::string escape (const char *string) {
     std::string::size_type i = 0;
     while (i < length) {
         char c = string[i];
-	int8_t width = UTF8::utf8_octets (string + i);
+        int8_t width = UTF8::utf8_octets (string + i);
         if (c == '"') {
             after.append ("\\\"");
         }
@@ -644,16 +644,15 @@ fty_common_rest_utils_web_test (bool verbose)
         {"\\\\\\",                                                      R"(\\\\\\)"},
         {"\\\\\\\\",                                                    R"(\\\\\\\\)"},
         {"\\\\\\\\\\",                                                  R"(\\\\\\\\\\)"},
-
-	// tests for version which does not escape UTF-8
-       //{"\uA66A",                                                    "\uA66A"},
-	//{"Ꙫ",                                                      "Ꙫ"},
-	//{"\uA66A Ꙫ",                                               "\uA66A Ꙫ"},
+        // tests for version which does not escape UTF-8
+        //{"\uA66A",                                                    "\uA66A"},
+        //{"Ꙫ",                                                         "Ꙫ"},
+        //{"\uA66A Ꙫ",                                                  "\uA66A Ꙫ"},
 
         {"\\uA66A",                                                     R"(\\uA66A)"},
-        {"Ꙫ",                                                        R"(\ua66a)"},
-        {"\\Ꙫ",                                                      R"(\\\ua66a)"},
-        {"\u040A Њ",                                                  R"(\u040a \u040a)"},
+        {"Ꙫ",                                                           R"(\ua66a)"},
+        {"\\Ꙫ",                                                         R"(\\\ua66a)"},
+        {"\u040A Њ",                                                    R"(\u040a \u040a)"},
         // do not escape control chars yet
         //{"\u0002\u0005\u0018\u001B",                                  R"(\u0002\u0005\u0018\u001b)"},
 
@@ -661,8 +660,8 @@ fty_common_rest_utils_web_test (bool verbose)
         {"\\\\uA66A",                                                   R"(\\\\uA66A)"},
         {"\\\\\uA66A",                                                  R"(\\\\\ua66a)"},
 
-        {"\\\\Ꙫ",                                                    R"(\\\\\ua66a)"},
-        {"\\\\\\Ꙫ",                                                  R"(\\\\\\\ua66a)"},
+        {"\\\\Ꙫ",                                                       R"(\\\\\ua66a)"},
+        {"\\\\\\Ꙫ",                                                     R"(\\\\\\\ua66a)"},
 
         {"first second \n third\n\n \\n \\\\\n fourth",                 R"(first second \\n third\\n\\n \\n \\\\\\n fourth)"},
         // do not escape control chars yet
