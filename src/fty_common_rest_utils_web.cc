@@ -210,21 +210,21 @@ std::string escape (const char *string) {
             after.append ("\\\\");
         }
         // escape UTF-8 chars which have more than 1 byte
-	    else if (width > 1) {
-	        // allocate memory for "\u" + 4 hex digits + terminator
-	        // allocating 8 bytes just for performance doesn't make sense
-	        char *codepoint = (char *) calloc (7, sizeof (char));
-	        // calloc() takes care of zero termination, which utf8_to_codepoint() doesn't do
-	        UTF8::utf8_to_codepoint (string + i, &codepoint);
+        else if (width > 1) {
+            // allocate memory for "\u" + 4 hex digits + terminator
+            // allocating 8 bytes just for performance doesn't make sense
+            char *codepoint = (char *) calloc (7, sizeof (char));
+            // calloc() takes care of zero termination, which utf8_to_codepoint() doesn't do
+            UTF8::utf8_to_codepoint (string + i, &codepoint);
 
-	        std::string codepoint_str (codepoint);
-	        zstr_free (&codepoint);
-	        after.append (codepoint_str);
-	    }
+            std::string codepoint_str (codepoint);
+            zstr_free (&codepoint);
+            after.append (codepoint_str);
+        }
         else {
             after += c;
         }
-	i += width;
+        i += width;
     }
     return after;
 }
