@@ -37,6 +37,7 @@
 #include <cxxtools/split.h>
 #include <stdlib.h> // for random()
 #include <sys/syscall.h>
+#include <fty_common_utf8.h>
 
 //#include "shared/subprocess.h"
 #include "fty_common_rest_utils_web.h"
@@ -183,9 +184,10 @@ std::string escape (const char *string) {
         \u four-hex-digits
     ------------------------------
 */
-
-    for (std::string::size_type i = 0; i < length; ++i) {
+    std::string::size_type i = 0;
+    while (i < length) {
         char c = string[i];
+        int8_t width = UTF8::utf8_octets (string + i);
         if (c == '"') {
             after.append ("\\\"");
         }
@@ -207,9 +209,22 @@ std::string escape (const char *string) {
         else if (c == '\\') {
             after.append ("\\\\");
         }
+        // escape UTF-8 chars which have more than 1 byte
+        else if (width > 1) {
+            // allocate memory for "\u" + 4 hex digits + terminator
+            // allocating 8 bytes just for performance doesn't make sense
+            char *codepoint = (char *) calloc (7, sizeof (char));
+            // calloc() takes care of zero termination, which utf8_to_codepoint() doesn't do
+            UTF8::utf8_to_codepoint (string + i, &codepoint);
+
+            std::string codepoint_str (codepoint);
+            zstr_free (&codepoint);
+            after.append (codepoint_str);
+        }
         else {
             after += c;
         }
+        i += width;
     }
     return after;
 }
@@ -629,29 +644,28 @@ fty_common_rest_utils_web_test (bool verbose)
         {"\\\\\\",                                                      R"(\\\\\\)"},
         {"\\\\\\\\",                                                    R"(\\\\\\\\)"},
         {"\\\\\\\\\\",                                                  R"(\\\\\\\\\\)"},
+        // tests for version which does not escape UTF-8
+        //{"\uA66A",                                                    "\uA66A"},
+        //{"Ꙫ",                                                         "Ꙫ"},
+        //{"\uA66A Ꙫ",                                                  "\uA66A Ꙫ"},
 
-        {"\uA66A",                                                      "\uA66A"},
-        {"Ꙫ",                                                           "Ꙫ"},
-        {"\uA66A Ꙫ",                                                    "\uA66A Ꙫ"},
-
-        /*
         {"\\uA66A",                                                     R"(\\uA66A)"},
-        {"\\Ꙫ",                                                         R"(\\\u00ea\u0099\u00aa)"},
-        {"\u040A Њ",                                                    R"(\u00d0\u008a \u00d0\u008a)"},
-        {"\u0002\u0005\u0018\u001B",                                    R"(\u0002\u0005\u0018\u001b)"},
+        {"Ꙫ",                                                           R"(\ua66a)"},
+        {"\\Ꙫ",                                                         R"(\\\ua66a)"},
+        {"\u040A Њ",                                                    R"(\u040a \u040a)"},
+        // do not escape control chars yet
+        //{"\u0002\u0005\u0018\u001B",                                  R"(\u0002\u0005\u0018\u001b)"},
 
-        {"\\\uA66A",                                                    R"(\\\u00ea\u0099\u00aa)"},
+        {"\\\uA66A",                                                    R"(\\\ua66a)"},
         {"\\\\uA66A",                                                   R"(\\\\uA66A)"},
-        {"\\\\\uA66A",                                                  R"(\\\\\u00ea\u0099\u00aa)"},
+        {"\\\\\uA66A",                                                  R"(\\\\\ua66a)"},
 
-        {"\\\\Ꙫ",                                                       R"(\\\\\u00ea\u0099\u00aa)"},
-        {"\\\\\\Ꙫ",                                                     R"(\\\\\\\u00ea\u0099\u00aa)"},
-        */
+        {"\\\\Ꙫ",                                                       R"(\\\\\ua66a)"},
+        {"\\\\\\Ꙫ",                                                     R"(\\\\\\\ua66a)"},
 
         {"first second \n third\n\n \\n \\\\\n fourth",                 R"(first second \\n third\\n\\n \\n \\\\\\n fourth)"},
-        /*
-        {"first second \n third\n\"\n \\n \\\\\"\f\\\t\\u\u0007\\\n fourth", R"(first second \\n third\\n\"\\n \\n \\\\\"\\f\\\\t\\u\u0007\\\\n fourth)"}
-        */
+        // do not escape control chars yet
+        //{"first second \n third\n\"\n \\n \\\\\"\f\\\t\\u\u0007\\\n fourth", R"(first second \\n third\\n\"\\n \\n \\\\\"\\f\\\\t\\u\u0007\\\\n fourth)"}
     };
 
     // a valid json { key : utils::json::escape (<string> } is constructed,
@@ -668,7 +682,8 @@ fty_common_rest_utils_web_test (bool verbose)
         {"x\\\\\\\tx"},
         {"x\\Ꙫ\uA66A\n \\nx"},
         {"sdf\ndfg\n\\\n\\\\\n\b\tasd \b f\\bdfg"},
-        {"first second \n third\n\"\n \\n \\\\\"\f\\\t\\u\u0007\\\n fourth"}
+        // do not escape control chars yet
+        //{"first second \n third\n\"\n \\n \\\\\"\f\\\t\\u\u0007\\\n fourth"}
     };
 
 //    log_debug ("utils::json::escape","[utils::math::dtos][json][escape]");
