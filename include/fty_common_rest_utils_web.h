@@ -46,6 +46,7 @@
 //#include "utilspp.h"
 
 #include <tnt/http.h>
+#include <fty_common_utf8.h>
 
 #define BIOS_SCRIPT_USER "_bios-script"
 
@@ -403,24 +404,13 @@ std::string generate_mlm_client_id(std::string client_name);
 
 namespace json {
 
-/*!
- \brief Escape string for json output
- \return Escaped json on success, "(null_ptr)" string on null argument
-*/
-std::string escape (const char *string);
-
-/*!
- \brief Convenient wrapper for escape"("const char *string")"
-*/
-std::string escape (const std::string& before);
-
 std::string jsonify (double t);
 
 template <typename T
         , typename = typename std::enable_if<std::is_arithmetic<T>::value>::type>
 std::string jsonify (T t) {
     try {
-        return escape (std::to_string (t));
+        return UTF8::escape (std::to_string (t));
     } catch (...) {
         return "";
     }
@@ -434,7 +424,7 @@ template <typename T
         , typename std::enable_if<std::is_convertible<T, std::string>::value>::type* = nullptr>
 std::string jsonify (const T& t) {
     try {
-        return std::string ("\"").append (escape (t)).append ("\"");
+        return std::string ("\"").append (UTF8::escape (t)).append ("\"");
     } catch (...) {
         return "";
     }
