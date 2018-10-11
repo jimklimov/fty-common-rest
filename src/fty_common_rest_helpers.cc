@@ -162,7 +162,7 @@ check_element_identifier (const char *param_name, const std::string& param_value
     for (unsigned int a = 0; a < strlen (prohibited); ++a) {
         if (param_value.find (prohibited[a]) != std::string::npos) {
             char *err = (char *) malloc (sizeof (char) * 256); // zsys_sprintf would allocate at least this amount of memory, so no problem there
-            if ( sprintf (err, TRANSLATE_ME("value '%s' contains prohibited characters (%s)", param_value.c_str(), prohibited)) > 255) {
+            if ( sprintf (err, "%s", TRANSLATE_ME("value '%s' contains prohibited characters (%s)", param_value.c_str(), prohibited)) > 255) {
                 log_error ("Error too long: value '%s' contains prohibited characters (%s)", param_value.c_str(), prohibited);
             }
             http_add_error ("", errors, "request-param-bad", param_name, err, TRANSLATE_ME("valid identificator"));
@@ -173,7 +173,7 @@ check_element_identifier (const char *param_name, const std::string& param_value
     eid = DBAssets::name_to_asset_id (param_value);
     if (eid == -1) {
         char *err = (char *) malloc (sizeof (char) * 256); // zsys_sprintf would allocate at least this amount of memory, so no problem there
-        if ( sprintf (err, TRANSLATE_ME("value '%s' is not valid identificator", param_value.c_str())) > 255) {
+        if ( sprintf (err, "%s", TRANSLATE_ME("value '%s' is not valid identificator", param_value.c_str())) > 255) {
             log_error ("Error too long: value '%s' is not valid identificator", param_value.c_str());
         }
         http_add_error ("", errors, "request-param-bad", param_name, err, TRANSLATE_ME("existing identificator"));
