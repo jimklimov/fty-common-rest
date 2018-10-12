@@ -161,23 +161,23 @@ check_element_identifier (const char *param_name, const std::string& param_value
     const char *prohibited = "_@%;\"";
     for (unsigned int a = 0; a < strlen (prohibited); ++a) {
         if (param_value.find (prohibited[a]) != std::string::npos) {
-            char *err = (char *) malloc (sizeof (char) * 256); // zsys_sprintf would allocate at least this amount of memory, so no problem there
-            if ( sprintf (err, "%s", TRANSLATE_ME("value '%s' contains prohibited characters (%s)", param_value.c_str(), prohibited)) > 255) {
+            std::string err = TRANSLATE_ME("value '%s' contains prohibited characters (%s)", param_value.c_str(), prohibited);
+            if (err.length () > 255) {
                 log_error ("Error too long: value '%s' contains prohibited characters (%s)", param_value.c_str(), prohibited);
             }
-            http_add_error ("", errors, "request-param-bad", param_name, err, TRANSLATE_ME("valid identificator"));
-            free (err);
+            std::string expected = TRANSLATE_ME("valid identificator");
+            http_add_error ("", errors, "request-param-bad", param_name, err.c_str (), expected.c_str ());
             return false;
         }
     }
     eid = DBAssets::name_to_asset_id (param_value);
     if (eid == -1) {
-        char *err = (char *) malloc (sizeof (char) * 256); // zsys_sprintf would allocate at least this amount of memory, so no problem there
-        if ( sprintf (err, "%s", TRANSLATE_ME("value '%s' is not valid identificator", param_value.c_str())) > 255) {
+        std::string err = TRANSLATE_ME("value '%s' is not valid identificator", param_value.c_str());
+        if (err.length () > 255) {
             log_error ("Error too long: value '%s' is not valid identificator", param_value.c_str());
         }
-        http_add_error ("", errors, "request-param-bad", param_name, err, TRANSLATE_ME("existing identificator"));
-        free (err);
+        std::string expected = TRANSLATE_ME("existing identificator");
+        http_add_error ("", errors, "request-param-bad", param_name, err.c_str (), expected.c_str ());
         return false;
     }
     element_id = eid;
@@ -218,15 +218,11 @@ check_regex_text (const char *param_name, const std::string& param_value, const 
 {
     cxxtools::Regex R (regex, REG_EXTENDED | REG_ICASE);
     if (! R.match (param_value)) {
-        char *msg_received = zsys_sprintf (TRANSLATE_ME ("value '%s' is not valid", param_value.c_str ()));
-        std::string msg_received_str (msg_received);
-        zstr_free (&msg_received);
-        char *msg_expected = zsys_sprintf (TRANSLATE_ME ("string matching %s regular expression", regex.c_str ()));
-        std::string msg_expected_str (msg_expected);
-        zstr_free (&msg_expected);
+        std::string msg_received = TRANSLATE_ME ("value '%s' is not valid", param_value.c_str ());
+        std::string msg_expected = TRANSLATE_ME ("string matching %s regular expression", regex.c_str ());
         http_add_error ("", errors, "request-param-bad", param_name,
-                        msg_received_str.c_str (),
-                        msg_expected_str.c_str ());
+                        msg_received.c_str (),
+                        msg_expected.c_str ());
         return false;
     }
     return true;
@@ -279,7 +275,8 @@ static const std::vector <char> single_byte_excludes = {
 
 bool check_asset_name (const std::string& param_name, const std::string& name, http_errors_t &errors) {
     if (utf8_contains_chars (name, single_byte_excludes) == 1) {
-        http_add_error ("", errors, "request-param-bad", param_name.c_str (), name.c_str (), TRANSLATE_ME ("valid asset name (characters not allowed: \\x00 ... \\x0f"));
+        std::string err =  TRANSLATE_ME ("valid asset name (characters not allowed: \\x00 ... \\x0f");
+        http_add_error ("", errors, "request-param-bad", param_name.c_str (), name.c_str (), err.c_str ());
         return false;
     }
     return true;
