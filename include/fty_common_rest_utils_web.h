@@ -142,7 +142,6 @@ _die_asprintf(
 
     va_start(args, format);
     std::string buf_str = UTF8::vajsonify_translation_string (format, args);
-    log_error ("JSON: %s", buf_str.c_str ());
     va_end(args);
     size_t length = buf_str.length ();
     *buf = (char *) zmalloc (length + 1);
@@ -426,6 +425,13 @@ template <typename T
         , typename std::enable_if<std::is_convertible<T, std::string>::value>::type* = nullptr>
 std::string jsonify (const T& t) {
     try {
+        // check if the arg is already JSON
+        std::string t_str (t);
+        size_t length = t_str.length ();
+        if (length >= 2 && t[0] == '{' && t[1] != '{' && t[length-2] != '}' && t[length-1] == '}') {
+            log_error (t_str.c_str ());
+            return t;
+        }
         return std::string ("\"").append (UTF8::escape (t)).append ("\"");
     } catch (...) {
         return "";
