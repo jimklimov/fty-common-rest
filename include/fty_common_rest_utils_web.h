@@ -429,7 +429,7 @@ std::string jsonify (const T& t) {
         std::string t_str (t);
         size_t length = t_str.length ();
         if (length >= 2 && t[0] == '{' && t[1] != '{' && t[length-2] != '}' && t[length-1] == '}') {
-            log_error (t_str.c_str ());
+            log_trace (t_str.c_str ());
             return t;
         }
         return std::string ("\"").append (UTF8::escape (t)).append ("\"");
