@@ -47,6 +47,7 @@
 
 #include <tnt/http.h>
 #include <fty_common_utf8.h>
+#include <fty_common_macros.h>
 
 #define BIOS_SCRIPT_USER "_bios-script"
 
@@ -75,23 +76,23 @@ typedef std::array<_WSError, _WSErrorsCOUNT> _WSErrors;
 
 #define HTTP_TEAPOT 418 //see RFC2324
 static constexpr const _WSErrors _errors = { {
-    {"undefined",                HTTP_TEAPOT,                   INT_MIN, "I'm a teapot!" },
-    {"internal-error",           HTTP_INTERNAL_SERVER_ERROR,    42,      "Internal Server Error. %s" },
-    {"not-authorized",           HTTP_UNAUTHORIZED,             43,      "You are not authenticated or your rights are insufficient."},
-    {"element-not-found",        HTTP_NOT_FOUND,                44,      "Element '%s' not found."},
-    {"method-not-allowed",       HTTP_METHOD_NOT_ALLOWED,       45,      "Http method '%s' not allowed."},
-    {"request-param-required",   HTTP_BAD_REQUEST,              46,      "Parameter '%s' is required." },
-    {"request-param-bad",        HTTP_BAD_REQUEST,              47,      "Parameter '%s' has bad value. Received %s. Expected %s" },
-    {"bad-request-document",     HTTP_BAD_REQUEST,              48,      "Request document has invalid syntax. %s" },
-    {"data-conflict",            HTTP_CONFLICT,                 50,      "Element '%s' cannot be processed because of conflict. %s"},
-    {"action-forbidden",         HTTP_FORBIDDEN,                51,      "%s is forbidden. %s"},
-    {"parameter-conflict",       HTTP_BAD_REQUEST,              52,      "Request cannot be processed because of conflict in parameters. %s"},
-    {"content-too-big",          HTTP_REQUEST_ENTITY_TOO_LARGE, 53,      "Content size is too big, maximum size is %s" },
-    {"not-found",                HTTP_NOT_FOUND,                54,      "%s does not exist." },
-    {"precondition-failed",      HTTP_PRECONDITION_FAILED,      55,      "Precondition failed - %s" },
-    {"db-err",                   HTTP_INTERNAL_SERVER_ERROR,    56,      "General DB error. %s" },
-    {"bad-input",                HTTP_BAD_REQUEST,              57,      "Incorrect input. %s" },
-    {"licensing-err",            HTTP_FORBIDDEN,                58,      "Action forbidden in current licensing state. %s" }
+    {"undefined",                HTTP_TEAPOT,                   INT_MIN, TRANSLATE_ME_IGNORE_PARAMS ("I'm a teapot!") },
+    {"internal-error",           HTTP_INTERNAL_SERVER_ERROR,    42,      TRANSLATE_ME_IGNORE_PARAMS ("Internal Server Error. %s") },
+    {"not-authorized",           HTTP_UNAUTHORIZED,             43,      TRANSLATE_ME_IGNORE_PARAMS ("You are not authenticated or your rights are insufficient.") },
+    {"element-not-found",        HTTP_NOT_FOUND,                44,      TRANSLATE_ME_IGNORE_PARAMS ("Element '%s' not found.") },
+    {"method-not-allowed",       HTTP_METHOD_NOT_ALLOWED,       45,      TRANSLATE_ME_IGNORE_PARAMS ("Http method '%s' not allowed.") },
+    {"request-param-required",   HTTP_BAD_REQUEST,              46,      TRANSLATE_ME_IGNORE_PARAMS ("Parameter '%s' is required.") },
+    {"request-param-bad",        HTTP_BAD_REQUEST,              47,      TRANSLATE_ME_IGNORE_PARAMS ("Parameter '%s' has bad value. Received %s. Expected %s") },
+    {"bad-request-document",     HTTP_BAD_REQUEST,              48,      TRANSLATE_ME_IGNORE_PARAMS ("Request document has invalid syntax. %s") },
+    {"data-conflict",            HTTP_CONFLICT,                 50,      TRANSLATE_ME_IGNORE_PARAMS ("Element '%s' cannot be processed because of conflict. %s") },
+    {"action-forbidden",         HTTP_FORBIDDEN,                51,      TRANSLATE_ME_IGNORE_PARAMS ("%s is forbidden. %s") },
+    {"parameter-conflict",       HTTP_BAD_REQUEST,              52,      TRANSLATE_ME_IGNORE_PARAMS ("Request cannot be processed because of conflict in parameters. %s") },
+    {"content-too-big",          HTTP_REQUEST_ENTITY_TOO_LARGE, 53,      TRANSLATE_ME_IGNORE_PARAMS ("Content size is too big, maximum size is %s") },
+    {"not-found",                HTTP_NOT_FOUND,                54,      TRANSLATE_ME_IGNORE_PARAMS ("%s does not exist.") },
+    {"precondition-failed",      HTTP_PRECONDITION_FAILED,      55,      TRANSLATE_ME_IGNORE_PARAMS ("Precondition failed - %s") },
+    {"db-err",                   HTTP_INTERNAL_SERVER_ERROR,    56,      TRANSLATE_ME_IGNORE_PARAMS ("General DB error. %s") },
+    {"bad-input",                HTTP_BAD_REQUEST,              57,      TRANSLATE_ME_IGNORE_PARAMS ("Incorrect input. %s") },
+    {"licensing-err",            HTTP_FORBIDDEN,                58,      TRANSLATE_ME_IGNORE_PARAMS ("Action forbidden in current licensing state. %s") }
 //    {.key = "undefined",                .http_code = HTTP_TEAPOT,                   .err_code = INT_MIN, .message = "I'm a teapot!" },
 //    {.key = "internal-error",           .http_code = HTTP_INTERNAL_SERVER_ERROR,    .err_code = 42,      .message = "Internal Server Error. %s" },
 //    {.key = "not-authorized",           .http_code = HTTP_UNAUTHORIZED,             .err_code = 43,      .message = "You are not authenticated or your rights are insufficient."},
@@ -137,16 +138,16 @@ _die_asprintf(
         const char* format,
         ...)
 {
-    int r;
-    int saved_errno = errno;
     va_list args;
 
     va_start(args, format);
-    r = vasprintf(buf, format, args);
+    std::string buf_str = UTF8::vajsonify_translation_string (format, args);
     va_end(args);
+    size_t length = buf_str.length ();
+    *buf = (char *) zmalloc (length + 1);
+    strcpy (*buf, buf_str.c_str ());
 
-    errno = saved_errno;
-    return r;
+    return length;
 }
 
 //  ###### THOSE DEFINITONS ABOVE ARE PRIVATE TO http_die AND SHALL NOT BE ACCESSED DIRECTLY
@@ -424,6 +425,13 @@ template <typename T
         , typename std::enable_if<std::is_convertible<T, std::string>::value>::type* = nullptr>
 std::string jsonify (const T& t) {
     try {
+        // check if the arg is already JSON
+        std::string t_str (t);
+        size_t length = t_str.length ();
+        if (length >= 2 && t[0] == '{' && t[1] != '{' && t[length-2] != '}' && t[length-1] == '}') {
+            log_trace (t_str.c_str ());
+            return t;
+        }
         return std::string ("\"").append (UTF8::escape (t)).append ("\"");
     } catch (...) {
         return "";
