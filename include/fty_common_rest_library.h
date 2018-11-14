@@ -77,12 +77,10 @@
 #   endif
 #endif
 
-//  Project has no stable classes, so we build the draft API
-#undef  FTY_COMMON_REST_BUILD_DRAFT_API
-#define FTY_COMMON_REST_BUILD_DRAFT_API
-
 //  Opaque class structures to allow forward references
 //  These classes are stable or legacy and built in all releases
+typedef struct _fty_common_rest_utils_web_t fty_common_rest_utils_web_t;
+#define FTY_COMMON_REST_UTILS_WEB_T_DEFINED
 //  Draft classes are by default not built in stable releases
 #ifdef FTY_COMMON_REST_BUILD_DRAFT_API
 typedef struct _fty_common_rest_helpers_t fty_common_rest_helpers_t;
@@ -91,19 +89,17 @@ typedef struct _fty_common_rest_sasl_t fty_common_rest_sasl_t;
 #define FTY_COMMON_REST_SASL_T_DEFINED
 typedef struct _fty_common_rest_tokens_t fty_common_rest_tokens_t;
 #define FTY_COMMON_REST_TOKENS_T_DEFINED
-typedef struct _fty_common_rest_utils_web_t fty_common_rest_utils_web_t;
-#define FTY_COMMON_REST_UTILS_WEB_T_DEFINED
 typedef struct _fty_common_rest_audit_log_t fty_common_rest_audit_log_t;
 #define FTY_COMMON_REST_AUDIT_LOG_T_DEFINED
 #endif // FTY_COMMON_REST_BUILD_DRAFT_API
 
 
 //  Public classes, each with its own header file
+#include "fty_common_rest_utils_web.h"
 #ifdef FTY_COMMON_REST_BUILD_DRAFT_API
 #include "fty_common_rest_helpers.h"
 #include "fty_common_rest_sasl.h"
 #include "fty_common_rest_tokens.h"
-#include "fty_common_rest_utils_web.h"
 #include "fty_common_rest_audit_log.h"
 #endif // FTY_COMMON_REST_BUILD_DRAFT_API
 
