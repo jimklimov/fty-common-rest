@@ -26,7 +26,10 @@
 %if %{with drafts}
 %define DRAFTS yes
 %else
-%define DRAFTS no
+### MANUALLY MODIFIED: some classes are not marked stable, but are consumed,
+### so draft building is enforced
+###%define DRAFTS no
+%define DRAFTS yes
 %endif
 Name:           fty-common-rest
 Version:        1.0.0
