@@ -189,7 +189,7 @@ default|default-Werror|default-with-docs|valgrind|clang-format-check)
         BASE_PWD=${PWD}
         echo "`date`: INFO: Building prerequisite 'libsodium' from Git repository..." >&2
         cd ./tmp-deps
-        $CI_TIME git clone --quiet --depth 1 -b 1.0.5-FTY-master https://github.com/42ity/libsodium.git libsodium
+        $CI_TIME git clone --quiet --depth 1 -b release/IPM_Infra-1.5.0 https://github.com/42ity/libsodium.git libsodium
         cd ./libsodium
         CCACHE_BASEDIR=${PWD}
         export CCACHE_BASEDIR
@@ -222,7 +222,7 @@ default|default-Werror|default-with-docs|valgrind|clang-format-check)
         BASE_PWD=${PWD}
         echo "`date`: INFO: Building prerequisite 'cxxtools' from Git repository..." >&2
         cd ./tmp-deps
-        $CI_TIME git clone --quiet --depth 1 -b 2.2-FTY-master https://github.com/42ity/cxxtools.git cxxtools
+        $CI_TIME git clone --quiet --depth 1 -b release/IPM_Infra-1.5.0 https://github.com/42ity/cxxtools.git cxxtools
         cd ./cxxtools
         CCACHE_BASEDIR=${PWD}
         export CCACHE_BASEDIR
@@ -255,7 +255,7 @@ default|default-Werror|default-with-docs|valgrind|clang-format-check)
         BASE_PWD=${PWD}
         echo "`date`: INFO: Building prerequisite 'tntnet' from Git repository..." >&2
         cd ./tmp-deps
-        $CI_TIME git clone --quiet --depth 1 -b 2.2-FTY-master https://github.com/42ity/tntnet.git tntnet
+        $CI_TIME git clone --quiet --depth 1 -b release/IPM_Infra-1.5.0 https://github.com/42ity/tntnet.git tntnet
         cd ./tntnet
         CCACHE_BASEDIR=${PWD}
         export CCACHE_BASEDIR
@@ -298,7 +298,7 @@ default|default-Werror|default-with-docs|valgrind|clang-format-check)
         BASE_PWD=${PWD}
         echo "`date`: INFO: Building prerequisite 'log4cplus' from Git repository..." >&2
         cd ./tmp-deps
-        $CI_TIME git clone --quiet --depth 1 -b 1.1.2-FTY-master https://github.com/42ity/log4cplus.git log4cplus
+        $CI_TIME git clone --quiet --depth 1 -b release/IPM_Infra-1.5.0 https://github.com/42ity/log4cplus.git log4cplus
         cd ./log4cplus
         CCACHE_BASEDIR=${PWD}
         export CCACHE_BASEDIR
@@ -331,7 +331,7 @@ default|default-Werror|default-with-docs|valgrind|clang-format-check)
         BASE_PWD=${PWD}
         echo "`date`: INFO: Building prerequisite 'fty-common-logging' from Git repository..." >&2
         cd ./tmp-deps
-        $CI_TIME git clone --quiet --depth 1 -b master https://github.com/42ity/fty-common-logging.git fty-common-logging
+        $CI_TIME git clone --quiet --depth 1 -b release/IPM_Infra-1.5.0 https://github.com/42ity/fty-common-logging.git fty-common-logging
         cd ./fty-common-logging
         CCACHE_BASEDIR=${PWD}
         export CCACHE_BASEDIR
@@ -364,7 +364,7 @@ default|default-Werror|default-with-docs|valgrind|clang-format-check)
         BASE_PWD=${PWD}
         echo "`date`: INFO: Building prerequisite 'libzmq' from Git repository..." >&2
         cd ./tmp-deps
-        $CI_TIME git clone --quiet --depth 1 -b 4.2.0-FTY-master https://github.com/42ity/libzmq.git libzmq
+        $CI_TIME git clone --quiet --depth 1 -b release/IPM_Infra-1.5.0 https://github.com/42ity/libzmq.git libzmq
         cd ./libzmq
         CCACHE_BASEDIR=${PWD}
         export CCACHE_BASEDIR
@@ -397,7 +397,7 @@ default|default-Werror|default-with-docs|valgrind|clang-format-check)
         BASE_PWD=${PWD}
         echo "`date`: INFO: Building prerequisite 'czmq' from Git repository..." >&2
         cd ./tmp-deps
-        $CI_TIME git clone --quiet --depth 1 -b v3.0.2-FTY-master https://github.com/42ity/czmq.git czmq
+        $CI_TIME git clone --quiet --depth 1 -b release/IPM_Infra-1.5.0 https://github.com/42ity/czmq.git czmq
         cd ./czmq
         CCACHE_BASEDIR=${PWD}
         export CCACHE_BASEDIR
@@ -430,7 +430,7 @@ default|default-Werror|default-with-docs|valgrind|clang-format-check)
         BASE_PWD=${PWD}
         echo "`date`: INFO: Building prerequisite 'fty-common' from Git repository..." >&2
         cd ./tmp-deps
-        $CI_TIME git clone --quiet --depth 1 -b master https://github.com/42ity/fty-common.git fty-common
+        $CI_TIME git clone --quiet --depth 1 -b release/IPM_Infra-1.5.0 https://github.com/42ity/fty-common.git fty-common
         cd ./fty-common
         CCACHE_BASEDIR=${PWD}
         export CCACHE_BASEDIR
@@ -463,7 +463,7 @@ default|default-Werror|default-with-docs|valgrind|clang-format-check)
         BASE_PWD=${PWD}
         echo "`date`: INFO: Building prerequisite 'tntdb' from Git repository..." >&2
         cd ./tmp-deps
-        $CI_TIME git clone --quiet --depth 1 -b 1.3-FTY-master https://github.com/42ity/tntdb.git tntdb
+        $CI_TIME git clone --quiet --depth 1 -b release/IPM_Infra-1.5.0 https://github.com/42ity/tntdb.git tntdb
         cd ./tntdb
         cd ./tntdb
         CCACHE_BASEDIR=${PWD}
@@ -497,7 +497,7 @@ default|default-Werror|default-with-docs|valgrind|clang-format-check)
         BASE_PWD=${PWD}
         echo "`date`: INFO: Building prerequisite 'fty-common-db' from Git repository..." >&2
         cd ./tmp-deps
-        $CI_TIME git clone --quiet --depth 1 -b master https://github.com/42ity/fty-common-db.git fty-common-db
+        $CI_TIME git clone --quiet --depth 1 -b release/IPM_Infra-1.5.0 https://github.com/42ity/fty-common-db.git fty-common-db
         cd ./fty-common-db
         CCACHE_BASEDIR=${PWD}
         export CCACHE_BASEDIR
