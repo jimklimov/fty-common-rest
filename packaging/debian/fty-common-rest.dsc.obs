@@ -6,12 +6,12 @@ Maintainer: fty-common-rest Developers <eatonipcopensource@eaton.com>
 Architecture: any
 Build-Depends: debhelper (>= 9),
     pkg-config,
-    libsodium-dev,
     libcxxtools-dev,
     libtntnet-dev,
     libsasl2-dev,
     liblog4cplus-dev,
     libfty-common-logging-dev,
+    libsodium-dev,
     libzmq3-dev,
     libczmq-dev,
     libfty-common-dev,

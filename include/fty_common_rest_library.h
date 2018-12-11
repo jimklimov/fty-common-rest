@@ -30,7 +30,6 @@
 //  Set up environment for the application
 
 //  External dependencies
-#include <sodium.h>
 #include <cxxtools/allocator.h>
 #include <tnt/tntnet.h>
 #include <sasl/sasl.h>

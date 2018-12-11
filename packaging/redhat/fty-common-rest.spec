@@ -50,12 +50,12 @@ BuildRequires:  libtool
 BuildRequires:  pkgconfig
 BuildRequires:  xmlto
 BuildRequires:  gcc-c++
-BuildRequires:  libsodium-devel
 BuildRequires:  cxxtools-devel
 BuildRequires:  tntnet-devel
 BuildRequires:  cyrus-sasl-devel
 BuildRequires:  log4cplus-devel
 BuildRequires:  fty-common-logging-devel
+BuildRequires:  libsodium-devel
 BuildRequires:  zeromq-devel
 BuildRequires:  czmq-devel
 BuildRequires:  fty-common-devel
@@ -84,12 +84,12 @@ This package contains shared library for fty-common-rest: provides common restap
 Summary:        provides common restapi tools for agents
 Group:          System/Libraries
 Requires:       libfty_common_rest1 = %{version}
-Requires:       libsodium-devel
 Requires:       cxxtools-devel
 Requires:       tntnet-devel
 Requires:       cyrus-sasl-devel
 Requires:       log4cplus-devel
 Requires:       fty-common-logging-devel
+Requires:       libsodium-devel
 Requires:       zeromq-devel
 Requires:       czmq-devel
 Requires:       fty-common-devel
