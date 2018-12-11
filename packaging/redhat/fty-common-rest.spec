@@ -1,5 +1,6 @@
 #
 #    fty-common-rest - Provides common RestAPI tools for agents
+#    NOTE: This file was customized after generation, be sure to keep it
 #
 #    Copyright (C) 2014 - 2018 Eaton
 #

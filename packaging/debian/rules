@@ -1,6 +1,8 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
+#    NOTE: This file was customized after generation, be sure to keep it
+
 ### MANUALLY MODIFIED: some classes are not marked stable, but are consumed,
 ### so draft building is enforced
 ###DRAFTS=no
