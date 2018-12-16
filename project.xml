@@ -168,10 +168,14 @@
         </use>
     </use>
 
-    <class name = "fty_common_rest_helpers" selftest = "0" />
-    <class name = "fty_common_rest_sasl" selftest = "0" />
-    <class name = "fty_common_rest_tokens" selftest = "0" />
-    <class name = "fty_common_rest_utils_web" selftest = "1" stable = "1" />
-    <class name = "fty_common_rest_audit_log" selftest = "0">Manage audit log</class>
+    <!-- Note: Stability of classes below is marked as "legacy" somewhat
+         incorrectly: these interfaces may yet evolve (to be addressed by
+         the team across whole product ecosystem, so potentially not yet
+         "stable") and must be built and delivered (so not "draft"). -->
+    <class name = "fty_common_rest_helpers" selftest = "0" state = "legacy" />
+    <class name = "fty_common_rest_sasl" selftest = "0" state = "legacy" />
+    <class name = "fty_common_rest_tokens" selftest = "0" state = "legacy" />
+    <class name = "fty_common_rest_utils_web" selftest = "1" state = "legacy" />
+    <class name = "fty_common_rest_audit_log" selftest = "0" state = "legacy">Manage audit log</class>
 
 </project>

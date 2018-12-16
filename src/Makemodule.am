@@ -13,17 +13,12 @@ lib_LTLIBRARIES += src/libfty_common_rest.la
 pkgconfig_DATA = src/libfty_common_rest.pc
 
 src_libfty_common_rest_la_SOURCES = \
-    src/fty_common_rest_utils_web.cc \
-    src/platform.h
-
-if ENABLE_DRAFTS
-src_libfty_common_rest_la_SOURCES += \
     src/fty_common_rest_helpers.cc \
     src/fty_common_rest_sasl.cc \
     src/fty_common_rest_tokens.cc \
-    src/fty_common_rest_audit_log.cc
-
-endif
+    src/fty_common_rest_utils_web.cc \
+    src/fty_common_rest_audit_log.cc \
+    src/platform.h
 
 if ENABLE_DRAFTS
 src_libfty_common_rest_la_SOURCES += \

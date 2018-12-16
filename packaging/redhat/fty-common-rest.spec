@@ -1,6 +1,5 @@
 #
 #    fty-common-rest - Provides common RestAPI tools for agents
-#    NOTE: This file was customized after generation, be sure to keep it
 #
 #    Copyright (C) 2014 - 2018 Eaton
 #
@@ -27,10 +26,7 @@
 %if %{with drafts}
 %define DRAFTS yes
 %else
-### MANUALLY MODIFIED: some classes are not marked stable, but are consumed,
-### so draft building is enforced
-###%define DRAFTS no
-%define DRAFTS yes
+%define DRAFTS no
 %endif
 Name:           fty-common-rest
 Version:        1.0.0
