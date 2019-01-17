@@ -165,18 +165,18 @@ check_element_identifier (const char *param_name, const std::string& param_value
             if (err.length () > 255) {
                 log_error ("Error too long: value '%s' contains prohibited characters (%s)", param_value.c_str(), prohibited);
             }
-            std::string expected = TRANSLATE_ME("valid identificator");
+            std::string expected = TRANSLATE_ME("valid identifier");
             http_add_error ("", errors, "request-param-bad", param_name, err.c_str (), expected.c_str ());
             return false;
         }
     }
     eid = DBAssets::name_to_asset_id (param_value);
     if (eid == -1) {
-        std::string err = TRANSLATE_ME("value '%s' is not valid identificator", param_value.c_str());
+        std::string err = TRANSLATE_ME("value '%s' is not valid identifier", param_value.c_str());
         if (err.length () > 255) {
-            log_error ("Error too long: value '%s' is not valid identificator", param_value.c_str());
+            log_error ("Error too long: value '%s' is not valid identifier", param_value.c_str());
         }
-        std::string expected = TRANSLATE_ME("existing identificator");
+        std::string expected = TRANSLATE_ME("existing identifier");
         http_add_error ("", errors, "request-param-bad", param_name, err.c_str (), expected.c_str ());
         return false;
     }
