@@ -255,6 +255,7 @@ get_mapping (const std::string& key)
         // nut
         {"BIOS_NUT_POLLING_INTERVAL",   "nut/polling_interval"},
         // agent-smtp
+        {"language",                    "server/language"},
         {"BIOS_SMTP_SERVER",            "smtp/server"},
         {"BIOS_SMTP_PORT",              "smtp/port"},
         {"BIOS_SMTP_ENCRYPT",           "smtp/encryption"},
@@ -294,6 +295,11 @@ get_mapping (const std::string& key)
 const char *
 get_path (const std::string& key)
 {
+    if (key.find ("language") == 0)
+    {
+        return "/etc/fty-email/fty-email.cfg";
+    }
+    else
     if (key.find ("BIOS_SMTP_") == 0)
     {
         return "/etc/fty-email/fty-email.cfg";
@@ -433,13 +439,15 @@ json2zpl (
         key = it.name ();
 
         std::string file_path = get_path (key);
-        if (roots.count (file_path) == 0) {
-            zconfig_t *root = zconfig_load (file_path.c_str ());
-            if (!root)
-                root = zconfig_new ("root", NULL);
-            if (!root)
-                bios_throw ("internal-error", "zconfig_new () failed.");
-            roots [file_path] = root;
+        if (!file_path.empty ()) { //ignore unknown keys
+            if (roots.count (file_path) == 0) {
+                zconfig_t *root = zconfig_load (file_path.c_str ());
+                if (!root)
+                    root = zconfig_new ("root", NULL);
+                if (!root)
+                    bios_throw ("internal-error", "zconfig_new () failed.");
+                roots [file_path] = root;
+            }
         }
 
         zconfig_t *cfg = roots [file_path];
