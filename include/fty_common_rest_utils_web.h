@@ -62,7 +62,7 @@ typedef struct _wserror {
 } _WSError;
 
 // size of _errors array, keep this up to date otherwise code won't build
-static constexpr size_t _WSErrorsCOUNT = 17;
+static constexpr size_t _WSErrorsCOUNT = 18;
 
 // typedef for array of errors
 typedef std::array<_WSError, _WSErrorsCOUNT> _WSErrors;
@@ -92,7 +92,8 @@ static constexpr const _WSErrors _errors = { {
     {"precondition-failed",      HTTP_PRECONDITION_FAILED,      55,      TRANSLATE_ME_IGNORE_PARAMS ("Precondition failed - %s") },
     {"db-err",                   HTTP_INTERNAL_SERVER_ERROR,    56,      TRANSLATE_ME_IGNORE_PARAMS ("General DB error. %s") },
     {"bad-input",                HTTP_BAD_REQUEST,              57,      TRANSLATE_ME_IGNORE_PARAMS ("Incorrect input. %s") },
-    {"licensing-err",            HTTP_FORBIDDEN,                58,      TRANSLATE_ME_IGNORE_PARAMS ("Action forbidden in current licensing state. %s") }
+    {"licensing-err",            HTTP_FORBIDDEN,                58,      TRANSLATE_ME_IGNORE_PARAMS ("Action forbidden in current licensing state. %s") },
+    {"upstream-err",             HTTP_BAD_GATEWAY,              59,      TRANSLATE_ME_IGNORE_PARAMS ("Server which was contacted to fulfill the request has returned an error. %s") }
 //    {.key = "undefined",                .http_code = HTTP_TEAPOT,                   .err_code = INT_MIN, .message = "I'm a teapot!" },
 //    {.key = "internal-error",           .http_code = HTTP_INTERNAL_SERVER_ERROR,    .err_code = 42,      .message = "Internal Server Error. %s" },
 //    {.key = "not-authorized",           .http_code = HTTP_UNAUTHORIZED,             .err_code = 43,      .message = "You are not authenticated or your rights are insufficient."},
