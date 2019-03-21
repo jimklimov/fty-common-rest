@@ -277,7 +277,7 @@ BiosProfile tokens::verify_token(const std::string token, long int* expInSec, lo
         return BiosProfile::Anonymous;
     }
     *expInSec = tme - now;
-    
+
     if (user_name) {
         char *foo = new char[MESSAGE_LEN + 1];
         //char *foo = NULL;
@@ -293,12 +293,12 @@ BiosProfile tokens::verify_token(const std::string token, long int* expInSec, lo
         if (r != 2) {
             log_debug ("verify_token: read of username failed: %s", strerror(errno));
             if (foo)
-                free (foo);
+                delete[] foo;
             return BiosProfile::Anonymous;
         }
         if (foo_len > strlen (foo)) {
             log_debug ("verify_token: read username len %zu is bigger than actual string size %zu, data corruption", foo_len, strlen (foo));
-            free (foo);
+            delete[] foo;
             return BiosProfile::Anonymous;
         }
         foo [foo_len] = '\0';
