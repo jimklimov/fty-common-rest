@@ -102,6 +102,7 @@ std::map <std::string, std::string> systemctl_service_names = {
     { "fty-sensor-gpio", "" },
     { "fty-nut-configurator", "" },
     { "fty-metric-compute", "" },
+    { "fty-metric-ambient-location", ""},
     { "fty-alert-flexible", "" },
     // legacy compatibility
     { "bios-agent-smtp", "fty-email" },
