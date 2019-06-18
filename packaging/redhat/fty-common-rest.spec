@@ -54,7 +54,7 @@ BuildRequires:  cyrus-sasl-devel
 BuildRequires:  log4cplus-devel
 BuildRequires:  fty-common-logging-devel
 BuildRequires:  zeromq-devel
-BuildRequires:  czmq-devel
+BuildRequires:  czmq-devel >= 3.0.2
 BuildRequires:  fty-common-devel
 BuildRequires:  tntdb-devel
 BuildRequires:  fty-common-db-devel
@@ -88,7 +88,7 @@ Requires:       cyrus-sasl-devel
 Requires:       log4cplus-devel
 Requires:       fty-common-logging-devel
 Requires:       zeromq-devel
-Requires:       czmq-devel
+Requires:       czmq-devel >= 3.0.2
 Requires:       fty-common-devel
 Requires:       tntdb-devel
 Requires:       fty-common-db-devel
