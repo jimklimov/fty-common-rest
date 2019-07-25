@@ -28,30 +28,32 @@
 
 #include "fty_common_rest_classes.h"
 
-Ftylog AuditLogManager::_auditlog = Ftylog("www-audit", "/etc/fty/wwwlog.cfg");
+Ftylog AuditLogManager::_auditlog = Ftylog ("www-audit", "/etc/fty/wwwlog.cfg");
 
 //  return audit logger
-Ftylog* AuditLogManager::getInstance()
+Ftylog* AuditLogManager::getInstance ()
 {
   return &_auditlog;
 }
 
-void AuditLogManager::setAuditLogContext(const std::string token, const std::string username, const int userId)
+void AuditLogManager::setAuditLogContext (const std::string token, const std::string username, const int userId,
+        const std::string ip)
 {
-  Ftylog::clearContext();
+  Ftylog::clearContext ();
   // Prepare context params for audit-log
   std::hash<std::string> hash_token;
-  size_t contextToken = hash_token(token);
+  size_t contextToken = hash_token (token);
   std::map<std::string, std::string> contextParam;
-  contextParam.insert(std::make_pair("sessionid", std::to_string(contextToken)));
-  contextParam.insert(std::make_pair("username", username));
-  contextParam.insert(std::make_pair("uid", std::to_string(userId)));
+  contextParam.insert (std::make_pair ("sessionid", std::to_string (contextToken)));
+  contextParam.insert (std::make_pair ("username", username));
+  contextParam.insert (std::make_pair ("uid", std::to_string (userId)));
+  contextParam.insert (std::make_pair ("IP", ip));
 
   // Set the fty-log context
-  Ftylog::setContext(contextParam);
+  Ftylog::setContext (contextParam);
 }
 
-void AuditLogManager::clearAuditLogContext()
+void AuditLogManager::clearAuditLogContext ()
 {
-  Ftylog::clearContext();
+  Ftylog::clearContext ();
 }

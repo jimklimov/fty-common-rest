@@ -32,50 +32,51 @@
 
 
 /* Prints message in Audit Log with DEBUG level. */
-#define log_debug_audit(...) \
-        log_debug_log(AuditLogManager::getInstance(), __VA_ARGS__);
+#define log_debug_audit (...) \
+        log_debug_log (AuditLogManager::getInstance (), __VA_ARGS__);
 
 /* Prints message in Audit Log with INFO level. */
-#define log_info_audit(...) \
-        log_info_log(AuditLogManager::getInstance(), __VA_ARGS__);
+#define log_info_audit (...) \
+        log_info_log (AuditLogManager::getInstance (), __VA_ARGS__);
 
 /* Prints message in Audit Log with WARNING level*/
-#define log_warning_audit(...) \
-        log_warning_log(AuditLogManager::getInstance(), __VA_ARGS__);
+#define log_warning_audit (...) \
+        log_warning_log (AuditLogManager::getInstance (), __VA_ARGS__);
 
 /* Prints message in Audit Log with ERROR level*/
-#define log_error_audit(...) \
-        log_error_log(AuditLogManager::getInstance(), __VA_ARGS__);
+#define log_error_audit (...) \
+        log_error_log (AuditLogManager::getInstance (), __VA_ARGS__);
 
 /* Prints message in Audit Log with FATAL level. */
-#define log_fatal_audit(...) \
-        log_fatal_log(AuditLogManager::getInstance(), __VA_ARGS__);
+#define log_fatal_audit (...) \
+        log_fatal_log (AuditLogManager::getInstance (), __VA_ARGS__);
 
 //singleton for logger management
 class AuditLogManager
 {
 private:
-  AuditLogManager() = default;
-  ~AuditLogManager(){};
+  AuditLogManager () = default;
+  ~AuditLogManager (){};
   static Ftylog _auditlog;
-  
+
 public:
-  
+
   // Return singleton Audit Ftylog instance
-  static Ftylog* getInstance();
-  
+  static Ftylog* getInstance ();
+
   /**
    * Set audit log context.
-   * @param token The token 
+   * @param token The token
    * @param username The user name
    * @param userId The user id
    */
-  static void setAuditLogContext(const std::string token, const std::string username, const int userId);
-  
+  static void setAuditLogContext (const std::string token, const std::string username, const int userId,
+          const std::string ip);
+
   /**
    * Clear audit log context.
    */
-  static void clearAuditLogContext();
+  static void clearAuditLogContext ();
 };
 
 #endif
