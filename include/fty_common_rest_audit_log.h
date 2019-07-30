@@ -55,27 +55,28 @@
 class AuditLogManager
 {
 private:
-  AuditLogManager() = default;
-  ~AuditLogManager(){};
+  AuditLogManager () = default;
+  ~AuditLogManager (){};
   static Ftylog _auditlog;
-  
+
 public:
-  
+
   // Return singleton Audit Ftylog instance
-  static Ftylog* getInstance();
-  
+  static Ftylog* getInstance ();
+
   /**
    * Set audit log context.
-   * @param token The token 
+   * @param token The token
    * @param username The user name
    * @param userId The user id
    */
-  static void setAuditLogContext(const std::string token, const std::string username, const int userId);
-  
+  static void setAuditLogContext (const std::string token, const std::string username, const int userId,
+          const std::string ip);
+
   /**
    * Clear audit log context.
    */
-  static void clearAuditLogContext();
+  static void clearAuditLogContext ();
 };
 
 #endif

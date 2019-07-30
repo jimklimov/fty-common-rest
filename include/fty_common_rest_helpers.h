@@ -39,7 +39,7 @@ systemctl_valid_service_name (std::string& service_name);
 void
 systemctl_get_service_names (std::vector <std::string>& v);
 
-    
+
 /*!
  \brief BiosProfile enum - defines levels of permissions
 
@@ -83,11 +83,11 @@ class UserInfo {
 
         std::string login () const {return _login;}
         void login (const std::string& login) {_login = login;}
-        
+
         bool reauth () const { return _reauth;}
         void reauth (bool reauth) {_reauth = reauth;}
 
-        const char* toString();
+        const char* toString ();
 
     protected:
         BiosProfile _profile;
@@ -132,6 +132,17 @@ check_element_identifier (const char *param_name, const std::string& param_value
     } \
 }
 
+#define check_element_identifier_or_die_audit(name, fromuser, checked, audit) \
+{  \
+    http_errors_t errors; \
+    if (! check_element_identifier (name, fromuser, checked, errors)) { \
+        if (audit != nullptr) { \
+            log_error_audit ("%s", audit); \
+        } \
+        http_die_error (errors); \
+    } \
+}
+
 /*!
   \brief Check whether string matches regexp (case insensitive, extended regexp).
 */
@@ -156,6 +167,19 @@ check_regex_text (const char *param_name, const std::string& param_value, const 
     } \
 }
 
+#define check_regex_text_or_die_audit(name, fromuser, checked, regexp, audit) \
+{  \
+    http_errors_t errors; \
+    if (check_regex_text (name, fromuser, regexp, errors)) { \
+        checked = fromuser; \
+    } else { \
+        if (audit != nullptr) { \
+            log_error_audit ("%s", audit); \
+        } \
+        http_die_error (errors); \
+    } \
+}
+
 #define _ALERT_RULE_NAME_RE_STR "^[-_.a-z0-9]{1,255}$"
 /*!
   \brief macro to check the alert name
@@ -170,6 +194,19 @@ check_regex_text (const char *param_name, const std::string& param_value, const 
     if (check_regex_text (name, fromuser, _ALERT_RULE_NAME_RE_STR, errors)) { \
         checked = fromuser; \
     } else { \
+        http_die_error (errors); \
+    } \
+}
+
+#define check_alert_rule_name_or_die_audit(name, fromuser, checked, audit) \
+{  \
+    http_errors_t errors; \
+    if (check_regex_text (name, fromuser, _ALERT_RULE_NAME_RE_STR, errors)) { \
+        checked = fromuser; \
+    } else { \
+        if (audit != nullptr) { \
+            log_info_audit ("%s", audit); \
+        } \
         http_die_error (errors); \
     } \
 }
@@ -236,9 +273,27 @@ void check_user_permissions (
             __http_die__debug__ = {__FILE__}; \
             __http_die__debug__ += ": " + std::to_string (__LINE__); \
         } \
-        check_user_permissions (user, request, p, __http_die__debug__, errors);\
-        if (errors.http_code != HTTP_OK) \
+        check_user_permissions (user, request, p, __http_die__debug__, errors); \
+        if (errors.http_code != HTTP_OK) { \
+            http_die_error (errors); \
+        } \
+    } while (0)
+
+#define CHECK_USER_PERMISSIONS_OR_DIE_AUDIT(p, audit) \
+    do { \
+        http_errors_t errors; \
+        std::string __http_die__debug__ {""}; \
+        if (::getenv ("BIOS_LOG_LEVEL") && !strcmp (::getenv ("BIOS_LOG_LEVEL"), "LOG_DEBUG")) { \
+            __http_die__debug__ = {__FILE__}; \
+            __http_die__debug__ += ": " + std::to_string (__LINE__); \
+        } \
+        check_user_permissions (user, request, p, __http_die__debug__, errors); \
+        if (errors.http_code != HTTP_OK) { \
+            if (audit != nullptr) { \
+                log_info_audit ("%s", audit); \
+            } \
             http_die_error (errors);\
+        } \
     } while (0)
 
 
