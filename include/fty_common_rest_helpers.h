@@ -131,6 +131,7 @@ check_element_identifier (const char *param_name, const std::string& param_value
         http_die_error (errors); \
     } \
 }
+
 #define check_element_identifier_or_die_audit (name, fromuser, checked, audit) \
 {  \
     http_errors_t errors; \
@@ -164,6 +165,7 @@ check_regex_text (const char *param_name, const std::string& param_value, const 
         http_die_error (errors); \
     } \
 }
+
 #define check_regex_text_or_die_audit (name, fromuser, checked, regexp, audit) \
 {  \
     http_errors_t errors; \
@@ -193,6 +195,7 @@ check_regex_text (const char *param_name, const std::string& param_value, const 
         http_die_error (errors); \
     } \
 }
+
 #define check_alert_rule_name_or_die_audit (name, fromuser, checked, audit) \
 {  \
     http_errors_t errors; \
@@ -271,6 +274,7 @@ void check_user_permissions (
         if (errors.http_code != HTTP_OK) \
             http_die_error (errors);\
     } while (0)
+
 #define CHECK_USER_PERMISSIONS_OR_DIE_AUDIT (p, audit) \
     do { \
         http_errors_t errors; \
