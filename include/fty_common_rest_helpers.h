@@ -136,7 +136,7 @@ check_element_identifier (const char *param_name, const std::string& param_value
 {  \
     http_errors_t errors; \
     if (! check_element_identifier (name, fromuser, checked, errors)) { \
-        if (audit != nullptr) { \
+        if ((audit) != nullptr) { \
             log_error_audit ("%s", audit); \
         } \
         http_die_error (errors); \
@@ -173,7 +173,7 @@ check_regex_text (const char *param_name, const std::string& param_value, const 
     if (check_regex_text (name, fromuser, regexp, errors)) { \
         checked = fromuser; \
     } else { \
-        if (audit != nullptr) { \
+        if ((audit) != nullptr) { \
             log_error_audit ("%s", audit); \
         } \
         http_die_error (errors); \
@@ -204,7 +204,7 @@ check_regex_text (const char *param_name, const std::string& param_value, const 
     if (check_regex_text (name, fromuser, _ALERT_RULE_NAME_RE_STR, errors)) { \
         checked = fromuser; \
     } else { \
-        if (audit != nullptr) { \
+        if ((audit) != nullptr) { \
             log_info_audit ("%s", audit); \
         } \
         http_die_error (errors); \
@@ -289,7 +289,7 @@ void check_user_permissions (
         } \
         check_user_permissions (user, request, p, __http_die__debug__, errors); \
         if (errors.http_code != HTTP_OK) { \
-            if (audit != nullptr) { \
+            if ((audit) != nullptr) { \
                 log_info_audit ("%s", audit); \
             } \
             http_die_error (errors);\
