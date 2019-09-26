@@ -278,6 +278,7 @@ get_mapping (const std::string& key)
         {"FTY_DISCOVERY_TYPE",     "discovery/type"},
         {"FTY_DISCOVERY_SCANS",    "discovery/scans"},
         {"FTY_DISCOVERY_IPS",      "discovery/ips"},
+        {"FTY_DISCOVERY_DOCUMENTS",     "discovery/documents"},
         //fty-discovery parameters
         {"FTY_DISCOVERY_DUMP_POOL",     "parameters/maxDumpPoolNumber"},
         {"FTY_DISCOVERY_SCAN_POOL",     "parameters/maxScanPoolNumber"},
