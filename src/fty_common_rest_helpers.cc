@@ -405,7 +405,7 @@ get_accepted_license_file (void)
     char *accepted_license = NULL;
     char *env = getenv (EV_DATA_DIR);
 
-    if (asprintf (&accepted_license, "%s/license", env ? env : "/var/lib/fty" ) == -1) {
+    if (asprintf (&accepted_license, "%s/license", env ? env : "/var/lib/fty/fty-eula" ) == -1) {
         return NULL;
     }
     return accepted_license;
