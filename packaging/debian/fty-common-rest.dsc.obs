@@ -15,6 +15,7 @@ Build-Depends: debhelper (>= 9),
     libczmq-dev (>= 3.0.2),
     libfty-common-dev,
     libfty-common-db-dev,
+    libtntdb-dev,
     asciidoc-base | asciidoc, xmlto,
     dh-autoreconf
 

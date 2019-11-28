@@ -84,6 +84,11 @@
 
     <use project = "fty-common-db" libname = "libfty_common_db" header = "fty_common_db.h"
         repository = "https://github.com/42ity/fty-common-db.git" />
+    
+    <use project = "tntdb"
+        test = "tntdb::Date::gmtime"
+        repository = "https://github.com/42ity/tntdb.git"
+        builddir = "tntdb" />
 
     <!-- Note: Stability of classes below is marked as "legacy" somewhat
          incorrectly: these interfaces may yet evolve (to be addressed by

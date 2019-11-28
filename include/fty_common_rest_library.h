@@ -38,6 +38,7 @@
 #include <czmq.h>
 #include <fty_common.h>
 #include <fty_common_db.h>
+#include <tntdb.h>
 
 //  FTY_COMMON_REST version macros for compile-time API detection
 #define FTY_COMMON_REST_VERSION_MAJOR 1

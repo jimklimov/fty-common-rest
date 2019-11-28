@@ -56,6 +56,7 @@ BuildRequires:  zeromq-devel
 BuildRequires:  czmq-devel >= 3.0.2
 BuildRequires:  fty-common-devel
 BuildRequires:  fty-common-db-devel
+BuildRequires:  tntdb-devel
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 
 %description
@@ -88,6 +89,7 @@ Requires:       zeromq-devel
 Requires:       czmq-devel >= 3.0.2
 Requires:       fty-common-devel
 Requires:       fty-common-db-devel
+Requires:       tntdb-devel
 
 %description devel
 provides common restapi tools for agents development tools

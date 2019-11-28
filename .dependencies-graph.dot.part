@@ -6,3 +6,4 @@
    fty-common-rest -> czmq;
    fty-common-rest -> fty-common;
    fty-common-rest -> fty-common-db;
+   fty-common-rest -> tntdb;
