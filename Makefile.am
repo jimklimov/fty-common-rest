@@ -13,17 +13,16 @@ AM_CPPFLAGS = \
     ${cxxtools_CFLAGS} \
     ${tntnet_CFLAGS} \
     ${libsasl2_CFLAGS} \
-    ${log4cplus_CFLAGS} \
     ${fty_common_logging_CFLAGS} \
     ${libzmq_CFLAGS} \
     ${czmq_CFLAGS} \
     ${fty_common_CFLAGS} \
-    ${tntdb_CFLAGS} \
     ${fty_common_db_CFLAGS} \
+    ${tntdb_CFLAGS} \
     -D__STDC_FORMAT_MACROS \
     -I$(srcdir)/include
 
-project_libs = ${libsodium_LIBS} ${cxxtools_LIBS} ${tntnet_LIBS} ${libsasl2_LIBS} ${log4cplus_LIBS} ${fty_common_logging_LIBS} ${libzmq_LIBS} ${czmq_LIBS} ${fty_common_LIBS} ${tntdb_LIBS} ${fty_common_db_LIBS}
+project_libs = ${libsodium_LIBS} ${cxxtools_LIBS} ${tntnet_LIBS} ${libsasl2_LIBS} ${fty_common_logging_LIBS} ${libzmq_LIBS} ${czmq_LIBS} ${fty_common_LIBS} ${fty_common_db_LIBS} ${tntdb_LIBS}
 
 SUBDIRS = doc
 SUBDIRS += include
@@ -48,13 +47,12 @@ EXTRA_DIST += \
     Findcxxtools.cmake \
     Findtntnet.cmake \
     Findlibsasl2.cmake \
-    Findlog4cplus.cmake \
     Findfty_common_logging.cmake \
     Findlibzmq.cmake \
     Findczmq.cmake \
     Findfty_common.cmake \
-    Findtntdb.cmake \
     Findfty_common_db.cmake \
+    Findtntdb.cmake \
     builds/cmake/Modules/ClangFormat.cmake \
     builds/cmake/clang-format-check.sh.in \
     builds/cmake/Config.cmake.in \
