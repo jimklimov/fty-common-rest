@@ -69,7 +69,8 @@ class UserInfo {
             _profile {BiosProfile::Anonymous},
             _uid {-1},
             _gid {-1},
-            _reauth {false}
+            _reauth {false},
+            _reauthInitialized {false}
         {};
 
         BiosProfile profile () const {return _profile;}
@@ -84,8 +85,13 @@ class UserInfo {
         std::string login () const {return _login;}
         void login (const std::string& login) {_login = login;}
 
-        bool reauth () const { return _reauth;}
-        void reauth (bool reauth) {_reauth = reauth;}
+        /* Get or set the reauth flag */
+        bool reauth () const {return _reauth;}
+        void reauth (bool reauthval) {_reauth = reauthval; _reauthInitialized = true;}
+        /* Did someone set reauth to a specific value yet? */
+        bool reauthInitialized () const {return _reauthInitialized;}
+        /* Set a fallback default - only if no auth module had set a specific value yet */
+        void reauthDefault (bool reauthval) { if (!_reauthInitialized) {reauth(reauthval); } }
 
         const char* toString ();
 
@@ -95,6 +101,7 @@ class UserInfo {
         long int _gid;
         std::string _login;
         bool _reauth;
+        bool _reauthInitialized;
 };
 
 // 1    contains chars from 'exclude'
