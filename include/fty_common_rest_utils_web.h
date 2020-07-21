@@ -187,6 +187,18 @@ _die_asprintf(
  * replacing headers in practice, so we should only add one if not present */
 #define http_die_contenttype    http_die_contenttype_graceful
 
+/* Note: Here and below, we ignore -Wformat-extra-args because we intentionally
+   stick empty strings to rather ignore them, than access invalid memory with
+   bad callers giving not enough arguments at this time.
+   FIXME: Probably modern compilers that support format string inspection can
+   protect us better than such hacks?
+ */
+
+#if __GNUC__ >= 8
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-extra-args"
+#endif
+
 #define http_die(key, ...) \
     do { \
         constexpr size_t __http_die__key_idx__ = _die_idx<_WSErrorsCOUNT-1>((const char*)key); \
@@ -206,6 +218,9 @@ _die_asprintf(
     } \
     while(0)
 
+#if __GNUC__ >= 8
+#pragma GCC diagnostic pop
+#endif
 
 /**
  *  \brief http die based on _error index number
@@ -243,6 +258,12 @@ typedef struct _http_errors_t {
     std::vector <std::tuple <uint32_t, std::string, std::string>> errors;
 } http_errors_t;
 
+
+#if __GNUC__ >= 8
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-extra-args"
+#endif
+
 #define http_add_error(debug, errors, key, ...) \
 do { \
     static_assert (std::is_same <decltype (errors), http_errors_t&>::value, "'errors' argument in macro http_add_error must be a http_errors_t."); \
@@ -255,6 +276,11 @@ do { \
     free (__http_die__error_message__); \
 } \
 while (0)
+
+#if __GNUC__ >= 8
+#pragma GCC diagnostic pop
+#endif
+
 
 #define http_die_error(errors) \
 do { \
@@ -328,6 +354,11 @@ struct BiosError : std::invalid_argument {
  *
  */
 
+#if __GNUC__ >= 8
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-extra-args"
+#endif
+
 #define bios_error_idx(idx, str, key, ...) \
 do { \
     static_assert (std::is_same <decltype (str), std::string>::value || std::is_same <decltype (str), std::string&>::value, "'str' argument in macro bios_error_idx must be a std::string."); \
@@ -341,6 +372,11 @@ do { \
 } \
 while (0)
 
+#if __GNUC__ >= 8
+#pragma GCC diagnostic pop
+#endif
+
+
 /**
  * \brief throw specified bios error
  *
@@ -351,6 +387,11 @@ while (0)
  * by http_die_idx macro.
  *
  */
+
+#if __GNUC__ >= 8
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-extra-args"
+#endif
 
 #define bios_throw(key, ...) \
     do { \
@@ -363,6 +404,10 @@ while (0)
         log_warning("throw BiosError{%zu, \"%s\"}", __http_die__key_idx__, str.c_str());\
         throw BiosError{__http_die__key_idx__, str}; \
     } while (0);
+
+#if __GNUC__ >= 8
+#pragma GCC diagnostic pop
+#endif
 
 
 // General template for whether type T (a standard container) is iterable
