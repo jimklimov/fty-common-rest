@@ -127,6 +127,36 @@ _die_idx<1>(const char* key)
     return (strcmp(_errors.at(1).key, key) == 0 || strcmp(_errors.at(1).message, key) == 0) ? 1: 0;
 }
 
+/* Note: Here and below, we ignore -Wformat-extra-args because we intentionally
+   stick empty strings to rather ignore them, than access invalid memory with
+   bad callers giving not enough arguments at this time.
+   FIXME: Probably modern compilers that support format string inspection can
+   protect us better than such hacks?
+ */
+
+//#if __GNUC__ >= 8
+/*
+    #define PRAGMA_DIAG_PUSH _Pragma("GCC diagnostic push")
+    #define PRAGMA_DIAG_NO_FMT_ARGS _Pragma("GCC diagnostic ignored \"-Wformat-extra-args\"")
+    #define PRAGMA_DIAG_POP _Pragma("GCC diagnostic pop")
+*/
+//#else
+//    #define PRAGMA_DIAG_PUSH
+//    #define PRAGMA_DIAG_NO_FMT_ARGSk
+//    #define PRAGMA_DIAG_POP
+//#endif
+
+/*
+    #define PRAGMA_DIAG_PUSH #pragma GCC diagnostic push
+    #define PRAGMA_DIAG_NO_FMT_ARGS #pragma GCC diagnostic ignored "-Wformat-extra-args"
+    #define PRAGMA_DIAG_POP #pragma GCC diagnostic pop
+*/
+
+    #define PRAGMA_DIAG_PUSH _Pragma("GCC diagnostic push")
+    #define PRAGMA_DIAG_NO_FMT_ARGS _Pragma("GCC diagnostic ignored \"-Wformat-extra-args\"")
+    #define PRAGMA_DIAG_POP _Pragma("GCC diagnostic pop")
+
+
 static int
 _die_asprintf(
         char **buf,
@@ -186,14 +216,6 @@ _die_asprintf(
 /* By default use this variant - our version of tntnet seems VERY BAD at
  * replacing headers in practice, so we should only add one if not present */
 #define http_die_contenttype    http_die_contenttype_graceful
-
-/* Note: Here and below, we ignore -Wformat-extra-args because we intentionally
-   stick empty strings to rather ignore them, than access invalid memory with
-   bad callers giving not enough arguments at this time.
-   FIXME: Probably modern compilers that support format string inspection can
-   protect us better than such hacks?
- */
-
 #if __GNUC__ >= 8
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wformat-extra-args"
