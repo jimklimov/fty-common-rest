@@ -216,17 +216,15 @@ _die_asprintf(
 /* By default use this variant - our version of tntnet seems VERY BAD at
  * replacing headers in practice, so we should only add one if not present */
 #define http_die_contenttype    http_die_contenttype_graceful
-#if __GNUC__ >= 8
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-extra-args"
-#endif
-
 #define http_die(key, ...) \
     do { \
         constexpr size_t __http_die__key_idx__ = _die_idx<_WSErrorsCOUNT-1>((const char*)key); \
         static_assert(__http_die__key_idx__ != 0, "Can't find '" key "' in list of error messages. Either add new one either fix the typo in key"); \
         char *__http_die__error_message__ = NULL; \
+PRAGMA_DIAG_PUSH \
+PRAGMA_DIAG_NO_FMT_ARGS \
         _die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__, "", "", "", "", "" ); \
+PRAGMA_DIAG_POP \
         if (::getenv ("BIOS_LOG_LEVEL") && !strcmp (::getenv ("BIOS_LOG_LEVEL"), "LOG_DEBUG")) { \
             std::string __http_die__debug__ = {__FILE__}; \
             __http_die__debug__ += ": " + std::to_string (__LINE__); \
@@ -240,9 +238,6 @@ _die_asprintf(
     } \
     while(0)
 
-#if __GNUC__ >= 8
-#pragma GCC diagnostic pop
-#endif
 
 /**
  *  \brief http die based on _error index number
@@ -281,11 +276,6 @@ typedef struct _http_errors_t {
 } http_errors_t;
 
 
-#if __GNUC__ >= 8
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-extra-args"
-#endif
-
 #define http_add_error(debug, errors, key, ...) \
 do { \
     static_assert (std::is_same <decltype (errors), http_errors_t&>::value, "'errors' argument in macro http_add_error must be a http_errors_t."); \
@@ -293,15 +283,14 @@ do { \
     static_assert(__http_die__key_idx__ != 0, "Can't find '" key "' in list of error messages. Either add new one either fix the typo in key"); \
     (errors).http_code = _errors.at (__http_die__key_idx__).http_code; \
     char *__http_die__error_message__ = NULL; \
+PRAGMA_DIAG_PUSH \
+PRAGMA_DIAG_NO_FMT_ARGS \
     _die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__, "", "", "", "", "" ); \
+PRAGMA_DIAG_POP \
     (errors).errors.push_back (std::make_tuple (_errors.at (__http_die__key_idx__).err_code, __http_die__error_message__, (debug))); \
     free (__http_die__error_message__); \
 } \
 while (0)
-
-#if __GNUC__ >= 8
-#pragma GCC diagnostic pop
-#endif
 
 
 #define http_die_error(errors) \
@@ -375,28 +364,21 @@ struct BiosError : std::invalid_argument {
  * http_die_idx(idx, message);
  *
  */
-
-#if __GNUC__ >= 8
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-extra-args"
-#endif
-
 #define bios_error_idx(idx, str, key, ...) \
 do { \
     static_assert (std::is_same <decltype (str), std::string>::value || std::is_same <decltype (str), std::string&>::value, "'str' argument in macro bios_error_idx must be a std::string."); \
     constexpr size_t __http_die__key_idx__ = _die_idx<_WSErrorsCOUNT-1>((const char*)key); \
     static_assert(__http_die__key_idx__ != 0, "Can't find '" key "' in list of error messages. Either add new one either fix the typo in key"); \
     char *__http_die__error_message__ = NULL; \
+PRAGMA_DIAG_PUSH \
+PRAGMA_DIAG_NO_FMT_ARGS \
     _die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__, "", "", "", "", "" ); \
+PRAGMA_DIAG_POP \
     str = __http_die__error_message__; \
     idx = __http_die__key_idx__; \
     free (__http_die__error_message__); \
 } \
 while (0)
-
-#if __GNUC__ >= 8
-#pragma GCC diagnostic pop
-#endif
 
 
 /**
@@ -409,27 +391,20 @@ while (0)
  * by http_die_idx macro.
  *
  */
-
-#if __GNUC__ >= 8
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-extra-args"
-#endif
-
 #define bios_throw(key, ...) \
     do { \
         constexpr size_t __http_die__key_idx__ = _die_idx<_WSErrorsCOUNT-1>((const char*)key); \
         static_assert(__http_die__key_idx__ != 0, "Can't find '" key "' in list of error messages. Either add new one either fix the typo in key"); \
         char *__http_die__error_message__ = NULL; \
+PRAGMA_DIAG_PUSH \
+PRAGMA_DIAG_NO_FMT_ARGS \
         _die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__, "", "", "", "", "" ); \
+PRAGMA_DIAG_POP \
         std::string str{__http_die__error_message__}; \
         free(__http_die__error_message__); \
         log_warning("throw BiosError{%zu, \"%s\"}", __http_die__key_idx__, str.c_str());\
         throw BiosError{__http_die__key_idx__, str}; \
     } while (0);
-
-#if __GNUC__ >= 8
-#pragma GCC diagnostic pop
-#endif
 
 
 // General template for whether type T (a standard container) is iterable
