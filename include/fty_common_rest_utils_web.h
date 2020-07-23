@@ -172,7 +172,10 @@ _die_asprintf(
     va_list args;
 
     va_start(args, format);
-    std::string buf_str = UTF8::vajsonify_translation_string (format, args);
+PRAGMA_DIAG_PUSH
+PRAGMA_DIAG_NO_FMT_ARGS
+    std::string buf_str = UTF8::vajsonify_translation_string (format, args, "", "", "", "", "");
+PRAGMA_DIAG_POP
     va_end(args);
     size_t length = buf_str.length ();
     *buf = (char *) zmalloc (length + 1);
@@ -221,10 +224,7 @@ _die_asprintf(
         constexpr size_t __http_die__key_idx__ = _die_idx<_WSErrorsCOUNT-1>((const char*)key); \
         static_assert(__http_die__key_idx__ != 0, "Can't find '" key "' in list of error messages. Either add new one either fix the typo in key"); \
         char *__http_die__error_message__ = NULL; \
-PRAGMA_DIAG_PUSH \
-PRAGMA_DIAG_NO_FMT_ARGS \
-        _die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__, "", "", "", "", "" ); \
-PRAGMA_DIAG_POP \
+        _die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__ ); \
         if (::getenv ("BIOS_LOG_LEVEL") && !strcmp (::getenv ("BIOS_LOG_LEVEL"), "LOG_DEBUG")) { \
             std::string __http_die__debug__ = {__FILE__}; \
             __http_die__debug__ += ": " + std::to_string (__LINE__); \
@@ -283,10 +283,7 @@ do { \
     static_assert(__http_die__key_idx__ != 0, "Can't find '" key "' in list of error messages. Either add new one either fix the typo in key"); \
     (errors).http_code = _errors.at (__http_die__key_idx__).http_code; \
     char *__http_die__error_message__ = NULL; \
-PRAGMA_DIAG_PUSH \
-PRAGMA_DIAG_NO_FMT_ARGS \
-    _die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__, "", "", "", "", "" ); \
-PRAGMA_DIAG_POP \
+    _die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__ ); \
     (errors).errors.push_back (std::make_tuple (_errors.at (__http_die__key_idx__).err_code, __http_die__error_message__, (debug))); \
     free (__http_die__error_message__); \
 } \
@@ -370,10 +367,7 @@ do { \
     constexpr size_t __http_die__key_idx__ = _die_idx<_WSErrorsCOUNT-1>((const char*)key); \
     static_assert(__http_die__key_idx__ != 0, "Can't find '" key "' in list of error messages. Either add new one either fix the typo in key"); \
     char *__http_die__error_message__ = NULL; \
-PRAGMA_DIAG_PUSH \
-PRAGMA_DIAG_NO_FMT_ARGS \
-    _die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__, "", "", "", "", "" ); \
-PRAGMA_DIAG_POP \
+    _die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__ ); \
     str = __http_die__error_message__; \
     idx = __http_die__key_idx__; \
     free (__http_die__error_message__); \
@@ -396,10 +390,7 @@ while (0)
         constexpr size_t __http_die__key_idx__ = _die_idx<_WSErrorsCOUNT-1>((const char*)key); \
         static_assert(__http_die__key_idx__ != 0, "Can't find '" key "' in list of error messages. Either add new one either fix the typo in key"); \
         char *__http_die__error_message__ = NULL; \
-PRAGMA_DIAG_PUSH \
-PRAGMA_DIAG_NO_FMT_ARGS \
-        _die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__, "", "", "", "", "" ); \
-PRAGMA_DIAG_POP \
+        _die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__ ); \
         std::string str{__http_die__error_message__}; \
         free(__http_die__error_message__); \
         log_warning("throw BiosError{%zu, \"%s\"}", __http_die__key_idx__, str.c_str());\
