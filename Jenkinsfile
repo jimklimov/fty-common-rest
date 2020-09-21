@@ -571,6 +571,11 @@ pipeline {
                                 sh '''
                                     coverity-warning-parser.py "$PWD" "$PWD"
                                    '''
+                                script {
+                                    sh """ tar czf coverity-output.tar.gz ./tmp_cov_dir/output/*.errors.json """
+                                    archiveArtifacts artifacts: 'coverity-output.tar.gz'
+                                    sh "rm -f coverity-output.tar.gz"
+                                }
                               }
                             }
                         }
