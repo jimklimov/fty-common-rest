@@ -553,22 +553,27 @@ pipeline {
             stages {
                 stage('Compile') {
                     steps {
+                      dir("tmp/build-coverity") {
+                        deleteDir()
+                        unstash 'prepped'
                         sh '''
-                            ./autogen.sh
                             ./configure
                             make clean
                             coverity.sh --build "$PWD"
                             '''
+                      }
                     }
                 }
                 stage('Analyse') {
                     steps {
+                      dir("tmp/build-coverity") {
                         sh '''
                             coverity.sh --analyse "$PWD"
                            '''
                         sh '''
                             coverity-warning-parser.py "$PWD" "$PWD"
                            '''
+                      }
                     }
                 }
                 stage('Commit') {
@@ -580,6 +585,7 @@ pipeline {
                         }
                     }
                     steps {
+                      dir("tmp/build-coverity") {
                         sh '''
                             COV_GIT_URL=$(git remote -v | egrep '^origin' | awk '{print $2}' | head -1)
                             COV_GIT_PROJECT_NAME=$(basename "${COV_GIT_URL}" .git)
@@ -587,6 +593,7 @@ pipeline {
                             COV_GIT_COMMIT_ID=$(git rev-parse --short HEAD)
                             coverity.sh --commit "$PWD" "${COV_GIT_PROJECT_NAME}" "${COV_GIT_BRANCH}" "${COV_GIT_COMMIT_ID}"
                         '''
+                      }
                     }
                 }
             }
