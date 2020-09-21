@@ -199,13 +199,22 @@ _die_asprintf(
 // FIXME: Use non-zero values of argc to pad to needed amount with empty strings if NUMARGS<argc
 // This wrapper allows to code `http_add_error (debug, errors, "not-authorized", "");`
 // which pads an empty variadic argument because C++11 requires to have one in macros
-// and yet avoid formatting errors because the format string does not refer to it:
-#define _safe_die_asprintf(buf, argc, msgfmt, ...) \
+// and yet avoid formatting errors because the format string does not refer to it.
+// Note that in practice it must have 3+ arguments (char** buf, int argc, msgfmt, ...)
+// but to work around gcc warnings it hides msgfmt as the first variadic argument:
+#define _safe_die_asprintf(buf, argc, ...) \
     do { \
-        if (argc == 0) { \
-            _die_asprintf(buf, msgfmt); \
-        } else { \
-            _die_asprintf(buf, msgfmt, ##__VA_ARGS__); \
+        const char* args[] = { __VA_ARGS__ }; \
+        static_assert(sizeof(args) > 0, "No format and further strings passed into _safe_die_asprintf()"); \
+        static_assert((sizeof(args)/sizeof(char*)) > argc, "Too few vararg strings for the error message passed into _safe_die_asprintf()"); \
+        switch (argc) { \
+            case 0: _die_asprintf(buf, "%s", args[0]); break; \
+            case 1: _die_asprintf(buf, args[0], args[1]); break; \
+            case 2: _die_asprintf(buf, args[0], args[1], args[2]); break; \
+            case 3: _die_asprintf(buf, args[0], args[1], args[2], args[3]); break; \
+            case 4: _die_asprintf(buf, args[0], args[1], args[2], args[3], args[4]); break; \
+            case 5: _die_asprintf(buf, args[0], args[1], args[2], args[3], args[4], args[5]); break; \
+            default: static_assert(argc<6, "Unexpected amount of strings passed into _safe_die_asprintf()"); \
         } \
     } \
     while(0)
