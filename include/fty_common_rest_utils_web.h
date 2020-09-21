@@ -194,13 +194,41 @@ _die_asprintf(
  * hash chars, expands to the args if present, or removes the comma if not.
  */
 
-// FIXME: Use non-zero values of argc to pad to needed amount with empty strings if argn<argc
 // This wrapper allows to code `http_add_error (debug, errors, "not-authorized", "");`
 // which pads an empty variadic argument because C++11 requires to have one in macros
 // and yet avoid formatting errors because the format string does not refer to it.
 // Note that in practice it must have 3+ arguments (char** buf, int argc, msgfmt, ...)
 // but to work around gcc warnings it hides msgfmt as the first variadic argument:
-#define _safe_die_asprintf(buf, argc, ...) \
+// LEGACY: Uses non-zero values of argc to pad to needed amount with empty strings
+// if argn<argc because older code could rely on this:
+//    _safe_die_asprintf(buf, 0, "not-authorized") => argc==0, argn==1
+//    _safe_die_asprintf(buf, 0, "not-authorized", "") => argc==0, argn==2
+//    _safe_die_asprintf(buf, 3, "request-param-bad", "parname", "gotval", "expval") => argc==3, argn==4
+//    _safe_die_asprintf(buf, 3, "request-param-bad", "parname", "gotval") => argc==3, argn==3 (+1 generated: 4th "")
+//    _safe_die_asprintf(buf, 3, "request-param-bad", "parname") => argc==3, argn==2 (+2 generated: 3rd "" + 4th "")
+// If we decide to disable this failsafe, throw-switch here or re-define for a
+// tested component build the alias of _safe_die_asprintf__nolegacy() below -
+// that would be a bit faster too.
+
+#define _safe_die_asprintf__legacy(buf, argc, ...) \
+    do { \
+        const char* args[] = { __VA_ARGS__ }; \
+        const size_t argn = (sizeof(args)/sizeof(const char*)); \
+        static_assert( (argn > 0), "No format and further strings passed into _safe_die_asprintf()"); \
+        static_assert( (argc >= 0), "Negative count of expected vararg strings for the error message passed into _safe_die_asprintf()"); \
+        switch (argc) { \
+            case 0: _die_asprintf(buf, "%s", args[0]); break; \
+            case 1: _die_asprintf(buf, args[0], (argn>argc)?args[1]:""); break; \
+            case 2: _die_asprintf(buf, args[0], (argn>argc)?args[1]:"", (argn>argc)?args[2]:""); break; \
+            case 3: _die_asprintf(buf, args[0], (argn>argc)?args[1]:"", (argn>argc)?args[2]:"", (argn>argc)?args[3]:""); break; \
+            case 4: _die_asprintf(buf, args[0], (argn>argc)?args[1]:"", (argn>argc)?args[2]:"", (argn>argc)?args[3]:"", (argn>argc)?args[4]:""); break; \
+            case 5: _die_asprintf(buf, args[0], (argn>argc)?args[1]:"", (argn>argc)?args[2]:"", (argn>argc)?args[3]:"", (argn>argc)?args[4]:"", (argn>argc)?args[5]:""); break; \
+            default: static_assert(argc<6, "Unexpected amount of strings passed into _safe_die_asprintf()"); \
+        } \
+    } \
+    while(0)
+
+#define _safe_die_asprintf__nolegacy(buf, argc, ...) \
     do { \
         const char* args[] = { __VA_ARGS__ }; \
         const size_t argn = (sizeof(args)/sizeof(const char*)); \
@@ -218,6 +246,10 @@ _die_asprintf(
         } \
     } \
     while(0)
+
+#ifndef _safe_die_asprintf
+#define _safe_die_asprintf _safe_die_asprintf__legacy
+#endif
 
 #define http_die(key, ...) \
     do { \
