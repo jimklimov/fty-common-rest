@@ -205,6 +205,7 @@ _die_asprintf(
         const char* args[] = { __VA_ARGS__ }; \
         const size_t argn = (sizeof(args)/sizeof(const char*)); \
         static_assert( (argn > 0), "No format and further strings passed into _safe_die_asprintf()"); \
+        static_assert( (argc >= 0), "Negative count of expected vararg strings for the error message passed into _safe_die_asprintf()"); \
         static_assert( (argn > argc), "Too few vararg strings for the error message passed into _safe_die_asprintf()"); \
         switch (argc) { \
             case 0: _die_asprintf(buf, "%s", args[0]); break; \
