@@ -70,8 +70,11 @@ typedef std::array<_WSError, _WSErrorsCOUNT> _WSErrors;
 
 // WARNING!!! - don't use anything else than %s as format parameter for .message
 //
-// FIXME: gcc-8 complains about this trick so it is due to be removed
-// in favor of message_expansions
+// FIXME: LEGACY NOTE: Updated _safe_die_asprintf__legacy() defined below
+// supports the behavior from next paragraph, to support old code that might
+// rely on it, in a way that works with modern compilers. I do not know if
+// there are nowadays any use-cases that actually rely on this ambiguity.
+//
 // TL;DR;
 // The .messages are supposed to be called with FEWER formatting arguments than defined.
 // To avoid issues with going to unallocated memory, the _die_asprintf is called with
@@ -198,7 +201,9 @@ _die_asprintf(
 // which pads an empty variadic argument because C++11 requires to have one in macros
 // and yet avoid formatting errors because the format string does not refer to it.
 // Note that in practice it must have 3+ arguments (char** buf, int argc, msgfmt, ...)
-// but to work around gcc warnings it hides msgfmt as the first variadic argument:
+// but to work around gcc warnings it hides msgfmt as the first variadic argument.
+// Note that expandable arguments here must be "char*" strings; hopefully args[]
+// definition below will complain at compile-time about incompatible arguments.
 // LEGACY: Uses non-zero values of argc to pad to needed amount with empty strings
 // if argn<argc because older code could rely on this:
 //    _safe_die_asprintf(buf, 0, "not-authorized") => argc==0, argn==1
