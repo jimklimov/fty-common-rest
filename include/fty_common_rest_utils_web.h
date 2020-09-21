@@ -200,12 +200,12 @@ _die_asprintf(
 // This wrapper allows to code `http_add_error (debug, errors, "not-authorized", "");`
 // which pads an empty variadic argument because C++11 requires to have one in macros
 // and yet avoid formatting errors because the format string does not refer to it:
-#define _safe_die_asprintf(buf, argc, msgfmt, argv...) \
+#define _safe_die_asprintf(buf, argc, msgfmt, ...) \
     do { \
         if (argc == 0) { \
             _die_asprintf(buf, msgfmt); \
         } else { \
-            _die_asprintf(buf, msgfmt, ##argv); \
+            _die_asprintf(buf, msgfmt, ##__VA_ARGS__); \
         } \
     } \
     while(0)
