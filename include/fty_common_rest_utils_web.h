@@ -190,12 +190,32 @@ _die_asprintf(
  * replacing headers in practice, so we should only add one if not present */
 #define http_die_contenttype    http_die_contenttype_graceful
 
+/* Note: Code below relies on GCC extension that a ", ##__VA_ARGS" with double
+ * hash chars, expands to the args if present, or removes the comma if not.
+ */
+// From https://stackoverflow.com/a/2124433/4715872 :
+#define       NUMARGS(...)  (sizeof((int[]){0, ##__VA_ARGS__})/sizeof(int)-1)
+
+// FIXME: Use non-zero values of argc to pad to needed amount with empty strings if NUMARGS<argc
+// This wrapper allows to code `http_add_error (debug, errors, "not-authorized", "");`
+// which pads an empty variadic argument because C++11 requires to have one in macros
+// and yet avoid formatting errors because the format string does not refer to it:
+#define _safe_die_asprintf(buf, argc, msgfmt, argv...) \
+    do { \
+        if (argc == 0) { \
+            _die_asprintf(buf, msgfmt); \
+        } else { \
+            _die_asprintf(buf, msgfmt, ##argv); \
+        } \
+    } \
+    while(0)
+
 #define http_die(key, ...) \
     do { \
         constexpr size_t __http_die__key_idx__ = _die_idx<_WSErrorsCOUNT-1>((const char*)key); \
         static_assert(__http_die__key_idx__ != 0, "Can't find '" key "' in list of error messages. Either add new one either fix the typo in key"); \
         char *__http_die__error_message__ = NULL; \
-        _die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__); \
+        _safe_die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message_expansions, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__); \
         if (::getenv ("BIOS_LOG_LEVEL") && !strcmp (::getenv ("BIOS_LOG_LEVEL"), "LOG_DEBUG")) { \
             std::string __http_die__debug__ = {__FILE__}; \
             __http_die__debug__ += ": " + std::to_string (__LINE__); \
@@ -253,7 +273,7 @@ do { \
     static_assert(__http_die__key_idx__ != 0, "Can't find '" key "' in list of error messages. Either add new one either fix the typo in key"); \
     (errors).http_code = _errors.at (__http_die__key_idx__).http_code; \
     char *__http_die__error_message__ = NULL; \
-    _die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__); \
+    _safe_die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message_expansions, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__); \
     (errors).errors.push_back (std::make_tuple (_errors.at (__http_die__key_idx__).err_code, __http_die__error_message__, (debug))); \
     free (__http_die__error_message__); \
 } \
@@ -337,7 +357,7 @@ do { \
     constexpr size_t __http_die__key_idx__ = _die_idx<_WSErrorsCOUNT-1>((const char*)key); \
     static_assert(__http_die__key_idx__ != 0, "Can't find '" key "' in list of error messages. Either add new one either fix the typo in key"); \
     char *__http_die__error_message__ = NULL; \
-    _die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__); \
+    _safe_die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message_expansions, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__); \
     str = __http_die__error_message__; \
     idx = __http_die__key_idx__; \
     free (__http_die__error_message__); \
@@ -360,7 +380,7 @@ while (0)
         constexpr size_t __http_die__key_idx__ = _die_idx<_WSErrorsCOUNT-1>((const char*)key); \
         static_assert(__http_die__key_idx__ != 0, "Can't find '" key "' in list of error messages. Either add new one either fix the typo in key"); \
         char *__http_die__error_message__ = NULL; \
-        _die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__); \
+        _safe_die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message_expansions, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__); \
         std::string str{__http_die__error_message__}; \
         free(__http_die__error_message__); \
         log_warning("throw BiosError{%zu, \"%s\"}", __http_die__key_idx__, str.c_str());\
