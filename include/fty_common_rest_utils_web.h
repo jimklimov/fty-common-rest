@@ -193,10 +193,8 @@ _die_asprintf(
 /* Note: Code below relies on GCC extension that a ", ##__VA_ARGS" with double
  * hash chars, expands to the args if present, or removes the comma if not.
  */
-// From https://stackoverflow.com/a/2124433/4715872 :
-#define       NUMARGS(...)  (sizeof((int[]){0, ##__VA_ARGS__})/sizeof(int)-1)
 
-// FIXME: Use non-zero values of argc to pad to needed amount with empty strings if NUMARGS<argc
+// FIXME: Use non-zero values of argc to pad to needed amount with empty strings if argn<argc
 // This wrapper allows to code `http_add_error (debug, errors, "not-authorized", "");`
 // which pads an empty variadic argument because C++11 requires to have one in macros
 // and yet avoid formatting errors because the format string does not refer to it.
@@ -205,8 +203,9 @@ _die_asprintf(
 #define _safe_die_asprintf(buf, argc, ...) \
     do { \
         const char* args[] = { __VA_ARGS__ }; \
-        static_assert(sizeof(args) > 0, "No format and further strings passed into _safe_die_asprintf()"); \
-        static_assert((sizeof(args)/sizeof(char*)) > argc, "Too few vararg strings for the error message passed into _safe_die_asprintf()"); \
+        const size_t argn = (sizeof(args)/sizeof(const char*)); \
+        static_assert( (argn > 0), "No format and further strings passed into _safe_die_asprintf()"); \
+        static_assert( (argn > argc), "Too few vararg strings for the error message passed into _safe_die_asprintf()"); \
         switch (argc) { \
             case 0: _die_asprintf(buf, "%s", args[0]); break; \
             case 1: _die_asprintf(buf, args[0], args[1]); break; \
