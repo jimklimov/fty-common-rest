@@ -539,75 +539,76 @@ pipeline {
                       }
                     }
                 }
-            }
-        }
-        stage('Analyse with Coverity') {
-            when {
-                beforeAgent true
-                anyOf {
-                    branch 'master'
-                    branch "release/*"
-                    changeRequest()
-                }    
-            }
-            stages {
-                stage('Compile') {
-                    steps {
-                      dir("tmp/build-coverity") {
-                        deleteDir()
-                        unstash 'prepped'
-                        sh '''
-                            ./configure
-                            make clean
-                            coverity.sh --build "$PWD"
-                            '''
-                      }
-                    }
-                }
-                stage('Analyse') {
-                    steps {
-                      dir("tmp/build-coverity") {
-                        sh '''
-                            coverity.sh --analyse "$PWD"
-                           '''
-                        sh '''
-                            coverity-warning-parser.py "$PWD" "$PWD"
-                           '''
-                      }
-                    }
-                }
-                stage('Commit') {
+                stage('Analyse with Coverity') {
                     when {
                         beforeAgent true
                         anyOf {
                             branch 'master'
-                            branch 'release/*'
+                            branch "release/*"
+                            changeRequest()
                         }
                     }
-                    steps {
-                      dir("tmp/build-coverity") {
-                        sh '''
-                            COV_GIT_URL=$(git remote -v | egrep '^origin' | awk '{print $2}' | head -1)
-                            COV_GIT_PROJECT_NAME=$(basename "${COV_GIT_URL}" .git)
-                            COV_GIT_BRANCH=$(echo "${BRANCH_NAME}" | tr '/' '_')
-                            COV_GIT_COMMIT_ID=$(git rev-parse --short HEAD)
-                            coverity.sh --commit "$PWD" "${COV_GIT_PROJECT_NAME}" "${COV_GIT_BRANCH}" "${COV_GIT_COMMIT_ID}"
-                        '''
-                      }
+                    stages {
+                        stage('Compile') {
+                            steps {
+                              dir("tmp/build-coverity") {
+                                deleteDir()
+                                unstash 'prepped'
+                                sh '''
+                                    ./configure
+                                    make clean
+                                    coverity.sh --build "$PWD"
+                                    '''
+                              }
+                            }
+                        }
+                        stage('Analyse') {
+                            steps {
+                              dir("tmp/build-coverity") {
+                                sh '''
+                                    coverity.sh --analyse "$PWD"
+                                   '''
+                                sh '''
+                                    coverity-warning-parser.py "$PWD" "$PWD"
+                                   '''
+                              }
+                            }
+                        }
+                        stage('Commit') {
+                            when {
+                                beforeAgent true
+                                anyOf {
+                                    branch 'master'
+                                    branch 'release/*'
+                                }
+                            }
+                            steps {
+                              dir("tmp/build-coverity") {
+                                sh '''
+                                    COV_GIT_URL=$(git remote -v | egrep '^origin' | awk '{print $2}' | head -1)
+                                    COV_GIT_PROJECT_NAME=$(basename "${COV_GIT_URL}" .git)
+                                    COV_GIT_BRANCH=$(echo "${BRANCH_NAME}" | tr '/' '_')
+                                    COV_GIT_COMMIT_ID=$(git rev-parse --short HEAD)
+                                    coverity.sh --commit "$PWD" "${COV_GIT_PROJECT_NAME}" "${COV_GIT_BRANCH}" "${COV_GIT_COMMIT_ID}"
+                                '''
+                              }
+                            }
+                        }
                     }
-                }
-            }
-            post {
-                always {
-                    recordIssues (
-                        enabledForFailure: true,
-                        aggregatingResults: true,
-                        qualityGates: [[threshold: 1, type: 'DELTA_ERROR', fail: true]],
-                        tools: [issues(name: "Coverity Analysis",pattern: '**/tmp_cov_dir/output/*.errors.json')]
-                    )
+                    post {
+                        always {
+                            recordIssues (
+                                enabledForFailure: true,
+                                aggregatingResults: true,
+                                qualityGates: [[threshold: 1, type: 'DELTA_ERROR', fail: true]],
+                                tools: [issues(name: "Coverity Analysis",pattern: '**/tmp_cov_dir/output/*.errors.json')]
+                            )
+                        }
+                    }
                 }
             }
         }
+
         stage ('deploy if appropriate') {
             steps {
                 script {
