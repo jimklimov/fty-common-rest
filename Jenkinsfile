@@ -175,10 +175,6 @@ pipeline {
                         milestone ordinal: 40, label: "${env.JOB_NAME}@${env.BRANCH_NAME}"
                     }
         }
-    stage ('compile standard and coverity') {
-     parallel {
-      stage ('compile/test standard') {
-       stages {
         stage ('compile') {
             parallel {
                 stage ('build with DRAFT') {
@@ -545,9 +541,7 @@ pipeline {
                 }
             }
         }
-       } // stages{} of stage ('compile/test standard') {
-      } // stage ('compile/test standard') {
-      stage('Analyse with Coverity') {
+        stage('Analyse with Coverity') {
             when {
                 beforeAgent true
                 anyOf {
@@ -613,10 +607,7 @@ pipeline {
                     )
                 }
             }
-        } // stage 'coverity'
-    } // parallel{std vs cov}
-   } // stage ('compile standard and coverity') {
-
+        }
         stage ('deploy if appropriate') {
             steps {
                 script {
