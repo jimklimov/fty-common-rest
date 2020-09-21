@@ -59,6 +59,7 @@ typedef struct _wserror {
     int http_code;          ///! http_code is HTTP reply code, use HTTP defines
     int err_code;           ///! sw internal error code
     const char* message;    ///! Message explaining the error, can contain printf like formatting chars
+    int message_expansions; ///! 0 if message is a fixed string without printf variable expansions, >1 count of expansions for dynamic messages
 } _WSError;
 
 // size of _errors array, keep this up to date otherwise code won't build
@@ -69,6 +70,8 @@ typedef std::array<_WSError, _WSErrorsCOUNT> _WSErrors;
 
 // WARNING!!! - don't use anything else than %s as format parameter for .message
 //
+// FIXME: gcc-8 complains about this trick so it is due to be removed
+// in favor of message_expansions
 // TL;DR;
 // The .messages are supposed to be called with FEWER formatting arguments than defined.
 // To avoid issues with going to unallocated memory, the _die_asprintf is called with
@@ -76,24 +79,24 @@ typedef std::array<_WSError, _WSErrorsCOUNT> _WSErrors;
 
 #define HTTP_TEAPOT 418 //see RFC2324
 static constexpr const _WSErrors _errors = { {
-    {"undefined",                HTTP_TEAPOT,                   INT_MIN, TRANSLATE_ME_IGNORE_PARAMS ("I'm a teapot!") },
-    {"internal-error",           HTTP_INTERNAL_SERVER_ERROR,    42,      TRANSLATE_ME_IGNORE_PARAMS ("Internal Server Error. %s") },
-    {"not-authorized",           HTTP_UNAUTHORIZED,             43,      TRANSLATE_ME_IGNORE_PARAMS ("You are not authenticated or your rights are insufficient.") },
-    {"element-not-found",        HTTP_NOT_FOUND,                44,      TRANSLATE_ME_IGNORE_PARAMS ("Element '%s' not found.") },
-    {"method-not-allowed",       HTTP_METHOD_NOT_ALLOWED,       45,      TRANSLATE_ME_IGNORE_PARAMS ("Http method '%s' not allowed.") },
-    {"request-param-required",   HTTP_BAD_REQUEST,              46,      TRANSLATE_ME_IGNORE_PARAMS ("Parameter '%s' is required.") },
-    {"request-param-bad",        HTTP_BAD_REQUEST,              47,      TRANSLATE_ME_IGNORE_PARAMS ("Parameter '%s' has bad value. Received %s. Expected %s.") },
-    {"bad-request-document",     HTTP_BAD_REQUEST,              48,      TRANSLATE_ME_IGNORE_PARAMS ("Request document has invalid syntax. %s") },
-    {"data-conflict",            HTTP_CONFLICT,                 50,      TRANSLATE_ME_IGNORE_PARAMS ("Element '%s' cannot be processed because of conflict. %s") },
-    {"action-forbidden",         HTTP_FORBIDDEN,                51,      TRANSLATE_ME_IGNORE_PARAMS ("%s is forbidden. %s") },
-    {"parameter-conflict",       HTTP_BAD_REQUEST,              52,      TRANSLATE_ME_IGNORE_PARAMS ("Request cannot be processed because of conflict in parameters. %s") },
-    {"content-too-big",          HTTP_REQUEST_ENTITY_TOO_LARGE, 53,      TRANSLATE_ME_IGNORE_PARAMS ("Content size is too big, maximum size is %s.") },
-    {"not-found",                HTTP_NOT_FOUND,                54,      TRANSLATE_ME_IGNORE_PARAMS ("%s does not exist.") },
-    {"precondition-failed",      HTTP_PRECONDITION_FAILED,      55,      TRANSLATE_ME_IGNORE_PARAMS ("Precondition failed - %s") },
-    {"db-err",                   HTTP_INTERNAL_SERVER_ERROR,    56,      TRANSLATE_ME_IGNORE_PARAMS ("General DB error. %s") },
-    {"bad-input",                HTTP_BAD_REQUEST,              57,      TRANSLATE_ME_IGNORE_PARAMS ("Incorrect input. %s") },
-    {"licensing-err",            HTTP_FORBIDDEN,                58,      TRANSLATE_ME_IGNORE_PARAMS ("Action forbidden in current licensing state. %s") },
-    {"upstream-err",             HTTP_BAD_GATEWAY,              59,      TRANSLATE_ME_IGNORE_PARAMS ("Server which was contacted to fulfill the request has returned an error. %s") }
+    {"undefined",                HTTP_TEAPOT,                   INT_MIN, TRANSLATE_ME_IGNORE_PARAMS ("I'm a teapot!"), 0 },
+    {"internal-error",           HTTP_INTERNAL_SERVER_ERROR,    42,      TRANSLATE_ME_IGNORE_PARAMS ("Internal Server Error. %s"), 1 },
+    {"not-authorized",           HTTP_UNAUTHORIZED,             43,      TRANSLATE_ME_IGNORE_PARAMS ("You are not authenticated or your rights are insufficient."), 0 },
+    {"element-not-found",        HTTP_NOT_FOUND,                44,      TRANSLATE_ME_IGNORE_PARAMS ("Element '%s' not found."), 1 },
+    {"method-not-allowed",       HTTP_METHOD_NOT_ALLOWED,       45,      TRANSLATE_ME_IGNORE_PARAMS ("Http method '%s' not allowed."), 1 },
+    {"request-param-required",   HTTP_BAD_REQUEST,              46,      TRANSLATE_ME_IGNORE_PARAMS ("Parameter '%s' is required."), 1 },
+    {"request-param-bad",        HTTP_BAD_REQUEST,              47,      TRANSLATE_ME_IGNORE_PARAMS ("Parameter '%s' has bad value. Received %s. Expected %s."), 3 },
+    {"bad-request-document",     HTTP_BAD_REQUEST,              48,      TRANSLATE_ME_IGNORE_PARAMS ("Request document has invalid syntax. %s"), 1 },
+    {"data-conflict",            HTTP_CONFLICT,                 50,      TRANSLATE_ME_IGNORE_PARAMS ("Element '%s' cannot be processed because of conflict. %s"), 2 },
+    {"action-forbidden",         HTTP_FORBIDDEN,                51,      TRANSLATE_ME_IGNORE_PARAMS ("%s is forbidden. %s"), 2 },
+    {"parameter-conflict",       HTTP_BAD_REQUEST,              52,      TRANSLATE_ME_IGNORE_PARAMS ("Request cannot be processed because of conflict in parameters. %s"), 1 },
+    {"content-too-big",          HTTP_REQUEST_ENTITY_TOO_LARGE, 53,      TRANSLATE_ME_IGNORE_PARAMS ("Content size is too big, maximum size is %s."), 1 },
+    {"not-found",                HTTP_NOT_FOUND,                54,      TRANSLATE_ME_IGNORE_PARAMS ("%s does not exist."), 1 },
+    {"precondition-failed",      HTTP_PRECONDITION_FAILED,      55,      TRANSLATE_ME_IGNORE_PARAMS ("Precondition failed - %s"), 1 },
+    {"db-err",                   HTTP_INTERNAL_SERVER_ERROR,    56,      TRANSLATE_ME_IGNORE_PARAMS ("General DB error. %s"), 1 },
+    {"bad-input",                HTTP_BAD_REQUEST,              57,      TRANSLATE_ME_IGNORE_PARAMS ("Incorrect input. %s"), 1 },
+    {"licensing-err",            HTTP_FORBIDDEN,                58,      TRANSLATE_ME_IGNORE_PARAMS ("Action forbidden in current licensing state. %s"), 1 },
+    {"upstream-err",             HTTP_BAD_GATEWAY,              59,      TRANSLATE_ME_IGNORE_PARAMS ("Server which was contacted to fulfill the request has returned an error. %s"), 1 }
 //    {.key = "undefined",                .http_code = HTTP_TEAPOT,                   .err_code = INT_MIN, .message = "I'm a teapot!" },
 //    {.key = "internal-error",           .http_code = HTTP_INTERNAL_SERVER_ERROR,    .err_code = 42,      .message = "Internal Server Error. %s" },
 //    {.key = "not-authorized",           .http_code = HTTP_UNAUTHORIZED,             .err_code = 43,      .message = "You are not authenticated or your rights are insufficient."},
