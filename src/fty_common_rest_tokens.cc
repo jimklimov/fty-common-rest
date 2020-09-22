@@ -46,7 +46,7 @@
 //! Maximum tokens per key
 #define MAX_USE 256
 
-const uint16_t tokens::MESSAGE_LEN =  (3 * sizeof (long int)) + sizeof (int) + 32;
+const uint32_t tokens::MESSAGE_LEN =  (3 * sizeof (long int)) + sizeof (int) + 64;
 
 static time_t mono_time(time_t *o_time) {
 #if defined(_POSIX_TIMERS) && defined(_POSIX_MONOTONIC_CLOCK)
