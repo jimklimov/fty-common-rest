@@ -225,8 +225,12 @@ void tokens::decode_token(char *buff, std::string token) {
             return;
         }
     }
-    for(int i = 0; i <= MESSAGE_LEN; i++)
+
+    for(uint32_t i = 0; i <= MESSAGE_LEN; i++)
+    {
         buff[i] = 0;
+    }
+
 }
 
 void tokens::clean_revoked() {
