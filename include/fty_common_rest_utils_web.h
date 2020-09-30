@@ -59,7 +59,6 @@ typedef struct _wserror {
     int http_code;          ///! http_code is HTTP reply code, use HTTP defines
     int err_code;           ///! sw internal error code
     const char* message;    ///! Message explaining the error, can contain printf like formatting chars
-    int message_expansions; ///! 0 if message is a fixed string without printf variable expansions, >1 count of expansions for dynamic messages
 } _WSError;
 
 // size of _errors array, keep this up to date otherwise code won't build
@@ -70,11 +69,6 @@ typedef std::array<_WSError, _WSErrorsCOUNT> _WSErrors;
 
 // WARNING!!! - don't use anything else than %s as format parameter for .message
 //
-// FIXME: LEGACY NOTE: Updated _safe_die_asprintf__legacy() defined below
-// supports the behavior from next paragraph, to support old code that might
-// rely on it, in a way that works with modern compilers. I do not know if
-// there are nowadays any use-cases that actually rely on this ambiguity.
-//
 // TL;DR;
 // The .messages are supposed to be called with FEWER formatting arguments than defined.
 // To avoid issues with going to unallocated memory, the _die_asprintf is called with
@@ -82,38 +76,38 @@ typedef std::array<_WSError, _WSErrorsCOUNT> _WSErrors;
 
 #define HTTP_TEAPOT 418 //see RFC2324
 static constexpr const _WSErrors _errors = { {
-    {"undefined",                HTTP_TEAPOT,                   INT_MIN, TRANSLATE_ME_IGNORE_PARAMS ("I'm a teapot!"), 0 },
-    {"internal-error",           HTTP_INTERNAL_SERVER_ERROR,    42,      TRANSLATE_ME_IGNORE_PARAMS ("Internal Server Error. %s"), 1 },
-    {"not-authorized",           HTTP_UNAUTHORIZED,             43,      TRANSLATE_ME_IGNORE_PARAMS ("You are not authenticated or your rights are insufficient."), 0 },
-    {"element-not-found",        HTTP_NOT_FOUND,                44,      TRANSLATE_ME_IGNORE_PARAMS ("Element '%s' not found."), 1 },
-    {"method-not-allowed",       HTTP_METHOD_NOT_ALLOWED,       45,      TRANSLATE_ME_IGNORE_PARAMS ("Http method '%s' not allowed."), 1 },
-    {"request-param-required",   HTTP_BAD_REQUEST,              46,      TRANSLATE_ME_IGNORE_PARAMS ("Parameter '%s' is required."), 1 },
-    {"request-param-bad",        HTTP_BAD_REQUEST,              47,      TRANSLATE_ME_IGNORE_PARAMS ("Parameter '%s' has bad value. Received %s. Expected %s."), 3 },
-    {"bad-request-document",     HTTP_BAD_REQUEST,              48,      TRANSLATE_ME_IGNORE_PARAMS ("Request document has invalid syntax. %s"), 1 },
-    {"data-conflict",            HTTP_CONFLICT,                 50,      TRANSLATE_ME_IGNORE_PARAMS ("Element '%s' cannot be processed because of conflict. %s"), 2 },
-    {"action-forbidden",         HTTP_FORBIDDEN,                51,      TRANSLATE_ME_IGNORE_PARAMS ("%s is forbidden. %s"), 2 },
-    {"parameter-conflict",       HTTP_BAD_REQUEST,              52,      TRANSLATE_ME_IGNORE_PARAMS ("Request cannot be processed because of conflict in parameters. %s"), 1 },
-    {"content-too-big",          HTTP_REQUEST_ENTITY_TOO_LARGE, 53,      TRANSLATE_ME_IGNORE_PARAMS ("Content size is too big, maximum size is %s."), 1 },
-    {"not-found",                HTTP_NOT_FOUND,                54,      TRANSLATE_ME_IGNORE_PARAMS ("%s does not exist."), 1 },
-    {"precondition-failed",      HTTP_PRECONDITION_FAILED,      55,      TRANSLATE_ME_IGNORE_PARAMS ("Precondition failed - %s"), 1 },
-    {"db-err",                   HTTP_INTERNAL_SERVER_ERROR,    56,      TRANSLATE_ME_IGNORE_PARAMS ("General DB error. %s"), 1 },
-    {"bad-input",                HTTP_BAD_REQUEST,              57,      TRANSLATE_ME_IGNORE_PARAMS ("Incorrect input. %s"), 1 },
-    {"licensing-err",            HTTP_FORBIDDEN,                58,      TRANSLATE_ME_IGNORE_PARAMS ("Action forbidden in current licensing state. %s"), 1 },
-    {"upstream-err",             HTTP_BAD_GATEWAY,              59,      TRANSLATE_ME_IGNORE_PARAMS ("Server which was contacted to fulfill the request has returned an error. %s"), 1 }
-//    {.key = "undefined",                .http_code = HTTP_TEAPOT,                   .err_code = INT_MIN, .message = "I'm a teapot!", .message_expansions = 0 },
-//    {.key = "internal-error",           .http_code = HTTP_INTERNAL_SERVER_ERROR,    .err_code = 42,      .message = "Internal Server Error. %s", .message_expansions = 1 },
-//    {.key = "not-authorized",           .http_code = HTTP_UNAUTHORIZED,             .err_code = 43,      .message = "You are not authenticated or your rights are insufficient.", .message_expansions = 0 },
-//    {.key = "element-not-found",        .http_code = HTTP_NOT_FOUND,                .err_code = 44,      .message = "Element '%s' not found.", .message_expansions = 1 },
-//    {.key = "method-not-allowed",       .http_code = HTTP_METHOD_NOT_ALLOWED,       .err_code = 45,      .message = "Http method '%s' not allowed.", .message_expansions = 1 },
-//    {.key = "request-param-required",   .http_code = HTTP_BAD_REQUEST,              .err_code = 46,      .message = "Parameter '%s' is required.", .message_expansions = 1 },
-//    {.key = "request-param-bad",        .http_code = HTTP_BAD_REQUEST,              .err_code = 47,      .message = "Parameter '%s' has bad value. Received %s. Expected %s", .message_expansions = 3 },
-//    {.key = "bad-request-document",     .http_code = HTTP_BAD_REQUEST,              .err_code = 48,      .message = "Request document has invalid syntax. %s", .message_expansions = 1 },
-//    {.key = "data-conflict",            .http_code = HTTP_CONFLICT,                 .err_code = 50,      .message = "Element '%s' cannot be processed because of conflict. %s", .message_expansions = 2 },
-//    {.key = "action-forbidden",         .http_code = HTTP_FORBIDDEN,                .err_code = 51,      .message = "%s is forbidden. %s", .message_expansions = 2 },
-//    {.key = "parameter-conflict",       .http_code = HTTP_BAD_REQUEST,              .err_code = 52,      .message = "Request cannot be processed because of conflict in parameters. %s", .message_expansions = 1 },
-//    {.key = "content-too-big",          .http_code = HTTP_REQUEST_ENTITY_TOO_LARGE, .err_code = 53,      .message = "Content size is too big, maximum size is %s", .message_expansions = 1 },
-//    {.key = "not-found",                .http_code = HTTP_NOT_FOUND,                .err_code = 54,      .message = "%s does not exist.", .message_expansions = 1 },
-//    {.key = "precondition-failed",      .http_code = HTTP_PRECONDITION_FAILED,      .err_code = 55,      .message = "Precondition failed - %s", .message_expansions = 1 }
+    {"undefined",                HTTP_TEAPOT,                   INT_MIN, TRANSLATE_ME_IGNORE_PARAMS ("I'm a teapot!") },
+    {"internal-error",           HTTP_INTERNAL_SERVER_ERROR,    42,      TRANSLATE_ME_IGNORE_PARAMS ("Internal Server Error. %s") },
+    {"not-authorized",           HTTP_UNAUTHORIZED,             43,      TRANSLATE_ME_IGNORE_PARAMS ("You are not authenticated or your rights are insufficient.") },
+    {"element-not-found",        HTTP_NOT_FOUND,                44,      TRANSLATE_ME_IGNORE_PARAMS ("Element '%s' not found.") },
+    {"method-not-allowed",       HTTP_METHOD_NOT_ALLOWED,       45,      TRANSLATE_ME_IGNORE_PARAMS ("Http method '%s' not allowed.") },
+    {"request-param-required",   HTTP_BAD_REQUEST,              46,      TRANSLATE_ME_IGNORE_PARAMS ("Parameter '%s' is required.") },
+    {"request-param-bad",        HTTP_BAD_REQUEST,              47,      TRANSLATE_ME_IGNORE_PARAMS ("Parameter '%s' has bad value. Received %s. Expected %s.") },
+    {"bad-request-document",     HTTP_BAD_REQUEST,              48,      TRANSLATE_ME_IGNORE_PARAMS ("Request document has invalid syntax. %s") },
+    {"data-conflict",            HTTP_CONFLICT,                 50,      TRANSLATE_ME_IGNORE_PARAMS ("Element '%s' cannot be processed because of conflict. %s") },
+    {"action-forbidden",         HTTP_FORBIDDEN,                51,      TRANSLATE_ME_IGNORE_PARAMS ("%s is forbidden. %s") },
+    {"parameter-conflict",       HTTP_BAD_REQUEST,              52,      TRANSLATE_ME_IGNORE_PARAMS ("Request cannot be processed because of conflict in parameters. %s") },
+    {"content-too-big",          HTTP_REQUEST_ENTITY_TOO_LARGE, 53,      TRANSLATE_ME_IGNORE_PARAMS ("Content size is too big, maximum size is %s.") },
+    {"not-found",                HTTP_NOT_FOUND,                54,      TRANSLATE_ME_IGNORE_PARAMS ("%s does not exist.") },
+    {"precondition-failed",      HTTP_PRECONDITION_FAILED,      55,      TRANSLATE_ME_IGNORE_PARAMS ("Precondition failed - %s") },
+    {"db-err",                   HTTP_INTERNAL_SERVER_ERROR,    56,      TRANSLATE_ME_IGNORE_PARAMS ("General DB error. %s") },
+    {"bad-input",                HTTP_BAD_REQUEST,              57,      TRANSLATE_ME_IGNORE_PARAMS ("Incorrect input. %s") },
+    {"licensing-err",            HTTP_FORBIDDEN,                58,      TRANSLATE_ME_IGNORE_PARAMS ("Action forbidden in current licensing state. %s") },
+    {"upstream-err",             HTTP_BAD_GATEWAY,              59,      TRANSLATE_ME_IGNORE_PARAMS ("Server which was contacted to fulfill the request has returned an error. %s") }
+//    {.key = "undefined",                .http_code = HTTP_TEAPOT,                   .err_code = INT_MIN, .message = "I'm a teapot!" },
+//    {.key = "internal-error",           .http_code = HTTP_INTERNAL_SERVER_ERROR,    .err_code = 42,      .message = "Internal Server Error. %s" },
+//    {.key = "not-authorized",           .http_code = HTTP_UNAUTHORIZED,             .err_code = 43,      .message = "You are not authenticated or your rights are insufficient."},
+//    {.key = "element-not-found",        .http_code = HTTP_NOT_FOUND,                .err_code = 44,      .message = "Element '%s' not found."},
+//    {.key = "method-not-allowed",       .http_code = HTTP_METHOD_NOT_ALLOWED,       .err_code = 45,      .message = "Http method '%s' not allowed."},
+//    {.key = "request-param-required",   .http_code = HTTP_BAD_REQUEST,              .err_code = 46,      .message = "Parameter '%s' is required." },
+//    {.key = "request-param-bad",        .http_code = HTTP_BAD_REQUEST,              .err_code = 47,      .message = "Parameter '%s' has bad value. Received %s. Expected %s" },
+//    {.key = "bad-request-document",     .http_code = HTTP_BAD_REQUEST,              .err_code = 48,      .message = "Request document has invalid syntax. %s" },
+//    {.key = "data-conflict",            .http_code = HTTP_CONFLICT,                 .err_code = 50,      .message = "Element '%s' cannot be processed because of conflict. %s"},
+//    {.key = "action-forbidden",         .http_code = HTTP_FORBIDDEN,                .err_code = 51,      .message = "%s is forbidden. %s"},
+//    {.key = "parameter-conflict",       .http_code = HTTP_BAD_REQUEST,              .err_code = 52,      .message = "Request cannot be processed because of conflict in parameters. %s"},
+//    {.key = "content-too-big",          .http_code = HTTP_REQUEST_ENTITY_TOO_LARGE, .err_code = 53,      .message = "Content size is too big, maximum size is %s" },
+//    {.key = "not-found",                .http_code = HTTP_NOT_FOUND,                .err_code = 54,      .message = "%s does not exist." },
+//    {.key = "precondition-failed",      .http_code = HTTP_PRECONDITION_FAILED,      .err_code = 55,      .message = "Precondition failed - %s" }
     } };
 #undef HTTP_TEAPOT
 
@@ -193,75 +187,12 @@ _die_asprintf(
  * replacing headers in practice, so we should only add one if not present */
 #define http_die_contenttype    http_die_contenttype_graceful
 
-/* Note: Code below relies on GCC extension that a ", ##__VA_ARGS" with double
- * hash chars, expands to the args if present, or removes the comma if not.
- */
-
-// This wrapper allows to code `http_add_error (debug, errors, "not-authorized", "");`
-// which pads an empty variadic argument because C++11 requires to have one in macros
-// and yet avoid formatting errors because the format string does not refer to it.
-// Note that in practice it must have 3+ arguments (char** buf, int argc, msgfmt, ...)
-// but to work around gcc warnings it hides msgfmt as the first variadic argument.
-// Note that expandable arguments here must be "char*" strings; hopefully args[]
-// definition below will complain at compile-time about incompatible arguments.
-// LEGACY: Uses non-zero values of argc to pad to needed amount with empty strings
-// if argn<argc because older code could rely on this:
-//    _safe_die_asprintf(buf, 0, "not-authorized") => argc==0, argn==1
-//    _safe_die_asprintf(buf, 0, "not-authorized", "") => argc==0, argn==2
-//    _safe_die_asprintf(buf, 3, "request-param-bad", "parname", "gotval", "expval") => argc==3, argn==4
-//    _safe_die_asprintf(buf, 3, "request-param-bad", "parname", "gotval") => argc==3, argn==3 (+1 generated: 4th "")
-//    _safe_die_asprintf(buf, 3, "request-param-bad", "parname") => argc==3, argn==2 (+2 generated: 3rd "" + 4th "")
-// If we decide to disable this failsafe, throw-switch here or re-define for a
-// tested component build the alias of _safe_die_asprintf__nolegacy() below -
-// that would be a bit faster too.
-
-#define _safe_die_asprintf__legacy(buf, argc, ...) \
-    do { \
-        const char* args[] = { __VA_ARGS__ }; \
-        const size_t argn = (sizeof(args)/sizeof(const char*)); \
-        static_assert( (argn > 0), "No format and further strings passed into _safe_die_asprintf()"); \
-        static_assert( (argc >= 0), "Negative count of expected vararg strings for the error message passed into _safe_die_asprintf()"); \
-        switch (argc) { \
-            case 0: _die_asprintf(buf, "%s", args[0]); break; \
-            case 1: _die_asprintf(buf, args[0], (argn>argc)?args[1]:""); break; \
-            case 2: _die_asprintf(buf, args[0], (argn>argc)?args[1]:"", (argn>argc)?args[2]:""); break; \
-            case 3: _die_asprintf(buf, args[0], (argn>argc)?args[1]:"", (argn>argc)?args[2]:"", (argn>argc)?args[3]:""); break; \
-            case 4: _die_asprintf(buf, args[0], (argn>argc)?args[1]:"", (argn>argc)?args[2]:"", (argn>argc)?args[3]:"", (argn>argc)?args[4]:""); break; \
-            case 5: _die_asprintf(buf, args[0], (argn>argc)?args[1]:"", (argn>argc)?args[2]:"", (argn>argc)?args[3]:"", (argn>argc)?args[4]:"", (argn>argc)?args[5]:""); break; \
-            default: static_assert(argc<6, "Unexpected amount of strings passed into _safe_die_asprintf()"); \
-        } \
-    } \
-    while(0)
-
-#define _safe_die_asprintf__nolegacy(buf, argc, ...) \
-    do { \
-        const char* args[] = { __VA_ARGS__ }; \
-        const size_t argn = (sizeof(args)/sizeof(const char*)); \
-        static_assert( (argn > 0), "No format and further strings passed into _safe_die_asprintf()"); \
-        static_assert( (argc >= 0), "Negative count of expected vararg strings for the error message passed into _safe_die_asprintf()"); \
-        static_assert( (argn > argc), "Too few vararg strings for the error message passed into _safe_die_asprintf()"); \
-        switch (argc) { \
-            case 0: _die_asprintf(buf, "%s", args[0]); break; \
-            case 1: _die_asprintf(buf, args[0], args[1]); break; \
-            case 2: _die_asprintf(buf, args[0], args[1], args[2]); break; \
-            case 3: _die_asprintf(buf, args[0], args[1], args[2], args[3]); break; \
-            case 4: _die_asprintf(buf, args[0], args[1], args[2], args[3], args[4]); break; \
-            case 5: _die_asprintf(buf, args[0], args[1], args[2], args[3], args[4], args[5]); break; \
-            default: static_assert(argc<6, "Unexpected amount of strings passed into _safe_die_asprintf()"); \
-        } \
-    } \
-    while(0)
-
-#ifndef _safe_die_asprintf
-#define _safe_die_asprintf _safe_die_asprintf__legacy
-#endif
-
 #define http_die(key, ...) \
     do { \
         constexpr size_t __http_die__key_idx__ = _die_idx<_WSErrorsCOUNT-1>((const char*)key); \
         static_assert(__http_die__key_idx__ != 0, "Can't find '" key "' in list of error messages. Either add new one either fix the typo in key"); \
         char *__http_die__error_message__ = NULL; \
-        _safe_die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message_expansions, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__); \
+        _die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__, "", "", "", "", "" ); \
         if (::getenv ("BIOS_LOG_LEVEL") && !strcmp (::getenv ("BIOS_LOG_LEVEL"), "LOG_DEBUG")) { \
             std::string __http_die__debug__ = {__FILE__}; \
             __http_die__debug__ += ": " + std::to_string (__LINE__); \
@@ -319,7 +250,7 @@ do { \
     static_assert(__http_die__key_idx__ != 0, "Can't find '" key "' in list of error messages. Either add new one either fix the typo in key"); \
     (errors).http_code = _errors.at (__http_die__key_idx__).http_code; \
     char *__http_die__error_message__ = NULL; \
-    _safe_die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message_expansions, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__); \
+    _die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__, "", "", "", "", "" ); \
     (errors).errors.push_back (std::make_tuple (_errors.at (__http_die__key_idx__).err_code, __http_die__error_message__, (debug))); \
     free (__http_die__error_message__); \
 } \
@@ -403,7 +334,7 @@ do { \
     constexpr size_t __http_die__key_idx__ = _die_idx<_WSErrorsCOUNT-1>((const char*)key); \
     static_assert(__http_die__key_idx__ != 0, "Can't find '" key "' in list of error messages. Either add new one either fix the typo in key"); \
     char *__http_die__error_message__ = NULL; \
-    _safe_die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message_expansions, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__); \
+    _die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__, "", "", "", "", "" ); \
     str = __http_die__error_message__; \
     idx = __http_die__key_idx__; \
     free (__http_die__error_message__); \
@@ -426,7 +357,7 @@ while (0)
         constexpr size_t __http_die__key_idx__ = _die_idx<_WSErrorsCOUNT-1>((const char*)key); \
         static_assert(__http_die__key_idx__ != 0, "Can't find '" key "' in list of error messages. Either add new one either fix the typo in key"); \
         char *__http_die__error_message__ = NULL; \
-        _safe_die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message_expansions, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__); \
+        _die_asprintf(&__http_die__error_message__, _errors.at(__http_die__key_idx__).message, ##__VA_ARGS__, "", "", "", "", "" ); \
         std::string str{__http_die__error_message__}; \
         free(__http_die__error_message__); \
         log_warning("throw BiosError{%zu, \"%s\"}", __http_die__key_idx__, str.c_str());\
