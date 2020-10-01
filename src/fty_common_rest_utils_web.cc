@@ -916,9 +916,9 @@ fty_common_rest_utils_web_test (bool verbose)
         // Cleanup
         utils::config::roots_destroy(roots);
         roots.clear();
-
-        printf ("OK\n");
     }
+
+    printf ("OK\n");
 }
 
 #ifdef __cplusplus
