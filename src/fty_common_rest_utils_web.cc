@@ -926,7 +926,7 @@ fty_common_rest_utils_web_test (bool verbose)
 
         bios_error_idx(idx, err, "internal-error", "test13");
         expectation = "{ \"key\": \"Internal Server Error. {{var1}}\", \"variables\": { \"var1\": \"test13\" } }";
-        log_debug("Got err_str: %s", err.c_str());
+        log_debug("Got err_str: %s\n\tat index %i", err.c_str(), idx);
         log_debug("Expectation: %s", expectation.c_str());
         assert (!streq(err.c_str(), "Internal Server Error. test13"));
         assert (streq(err.c_str(), expectation.c_str()));
