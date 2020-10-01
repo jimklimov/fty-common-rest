@@ -929,6 +929,9 @@ fty_common_rest_utils_web_test (bool verbose)
             "\"variables\": { \"var1\": \"test13\" } }";
         log_debug("Got err_str: %s\n\tat index %i", err.c_str(), idx);
         log_debug("Expectation: %s", expectation.c_str());
+        // Verify that we did get the translated string,
+        // not the expansion of original printf pattern in
+        // the errors array from fty_common_rest_utils_web.h :
         assert (!streq(err.c_str(), "Internal Server Error. test13"));
         assert (streq(err.c_str(), expectation.c_str()));
 
